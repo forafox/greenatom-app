@@ -39,6 +39,12 @@ public class AuthController {
         return authService.login(new JwtRequest(user.getEmail(), request.password));
     }
 
+    @PostMapping("/register/admin")
+    public JwtResponse registerAdmin(@Validated(OnCreate.class)
+                                     @RequestBody final SignUpAdminRequest request) {
+        var user = userService.adminCreate(new UserDto(null, request.name, request.email, request.password),request.adminKey);
+        return authService.login(new JwtRequest(user.getEmail(), request.password));
+    }
 
     @PostMapping("/refresh")
     public JwtResponse refresh(@RequestBody String refreshToken) {
@@ -46,6 +52,10 @@ public class AuthController {
     }
 
     record SignUpRequest(@Email @NotNull String email, @NotNull String password, @NotNull String name) {
+    }
+
+    record SignUpAdminRequest(@Email @NotNull String email, @NotNull String password, @NotNull String name,
+                              @NotNull String adminKey) {
     }
 
     record SignInRequest(@Email @NotNull String email, @NotNull String password) {

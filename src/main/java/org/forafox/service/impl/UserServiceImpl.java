@@ -7,6 +7,7 @@ import org.forafox.domain.User;
 import org.forafox.domain.exception.ResourceNotFoundException;
 import org.forafox.repository.UserRepository;
 import org.forafox.service.UserService;
+import org.forafox.service.props.AdminProperties;
 import org.forafox.web.dto.UserDto;
 import org.forafox.web.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AdminProperties adminProperties;
 
     @Override
     @Transactional
@@ -29,10 +31,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(userDto.getEmail()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
-        User user = userMapper.toEntity(userDto, null);
-        user.setRoles(Set.of(Role.USER));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userMapper.toDto(userRepository.save(user));
+        return createUserEntity(userDto);
     }
 
     @Override
@@ -47,17 +46,36 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @Override
+    @Transactional
+    public UserDto adminCreate(UserDto userDto, String adminKey) {
+        if (userRepository.findByUsername(userDto.getEmail()).isPresent()) {
+            throw new IllegalStateException("User already exists.");
+        }
+        if (!adminKey.equals(adminProperties.getKey())) {
+            throw new IllegalStateException("The admin key is incorrect!");
+        }
+        return createUserEntity(userDto);
+    }
+
     @PostConstruct
-    private void insertUsersIntoDb(){
+    private void insertUsersIntoDb() {
         createAdminUser();
     }
 
-    private void createAdminUser(){
+    private void createAdminUser() {
         User user = new User();
         user.setName("Джон Доу");
         user.setUsername("johndoeadmin@gmail.com");
         user.setPassword(passwordEncoder.encode("JohnDoeAdmin"));
         user.setRoles(Set.of(Role.ADMIN));
         userRepository.save(user);
+    }
+
+    private UserDto createUserEntity(UserDto userDto) {
+        User user = userMapper.toEntity(userDto, null);
+        user.setRoles(Set.of(Role.USER));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userMapper.toDto(userRepository.save(user));
     }
 }

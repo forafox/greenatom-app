@@ -21,7 +21,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
     annotationProcessor("org.projectlombok:lombok")
-    testImplementation("com.h2database:h2:2.2.224")
+    implementation("com.h2database:h2:2.2.224")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
