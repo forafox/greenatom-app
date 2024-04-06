@@ -1,5 +1,7 @@
 plugins {
-    id("java")
+    java
+    id("org.springframework.boot") version "3.2.4"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
 group = "org.forafox"
@@ -15,6 +17,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+    implementation("org.projectlombok:lombok:1.18.28")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
     annotationProcessor("org.projectlombok:lombok")
