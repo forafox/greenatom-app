@@ -52,4 +52,11 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Topic not found"));
     }
 
+    @Override
+    public Topic updateTopicById(TopicDTO topicDTO) {
+        var topic = getTopicByID(topicDTO.getId());
+        topic.setTitle(topicDTO.getTitle());
+        return topicRepository.save(topic);
+    }
+
 }

@@ -15,4 +15,5 @@ public interface TopicService {
 
     Topic getTopicByID(Long id);
 
+    Topic updateTopicById(TopicDTO topicDTO);
 }

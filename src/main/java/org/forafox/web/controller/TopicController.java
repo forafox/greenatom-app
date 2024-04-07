@@ -33,12 +33,15 @@ public class TopicController {
 
     @PostMapping
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
-    public TopicResponse newTopic(@Validated @RequestBody final TopicRequest topicRequest) {
+    public TopicResponse createTopic(@Validated @RequestBody final TopicCreateRequest topicRequest) {
         return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title, null)));
     }
-//    @PutMapping
-//@Operation(description = "Update an existing topic by Id", operationId = "updateTopic",tags="Client API")
 
+    @PutMapping
+    @Operation(description = "Update an existing topic by Id", operationId = "updateTopic", tags = "Client API")
+    public TopicResponse updateTopic(@RequestBody final TopicWithDataRequest topicRequest) {
+        return dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id, topicRequest.title, null))));
+    }
 
     @GetMapping("/{topic_id}")
     @Operation(description = "Shows all messages in topic", operationId = "ListTopicMessages", tags = "Client API")
@@ -50,13 +53,14 @@ public class TopicController {
 
     @GetMapping
     @Operation(description = "View all topics", operationId = "listAllTopics", tags = "Client API")
-    public TopicListResponse getTopicByID() {
+    public TopicListResponse listAllTopics() {
         return dtoListToResponse(topicMapper.toDtos(topicService.getAllTopics()));
     }
 
 
     record TopicResponse(@NotNull Long id, @NotNull String title) {
     }
+
     record TopicResponseWithMessages(@NotNull Long id, @NotNull String title, List<MessageDTO> messageDTOList) {
     }
 
@@ -72,14 +76,18 @@ public class TopicController {
     }
 
     private TopicResponseWithMessages dtoToResponseWithMessages(TopicDTO dto) {
-        return new TopicResponseWithMessages(dto.getId(), dto.getTitle(),dto.getMessages());
+        return new TopicResponseWithMessages(dto.getId(), dto.getTitle(), dto.getMessages());
     }
 
     private TopicResponse dtoToResponse(TopicDTO dto) {
         return new TopicResponse(dto.getId(), dto.getTitle());
     }
 
-    record TopicRequest(@NotNull String title) {
+    record TopicCreateRequest(@NotNull String title) {
+
+    }
+
+    record TopicWithDataRequest(@NotNull Long id, String title) {
 
     }
 
