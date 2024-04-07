@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("/register/admin")
     public JwtResponse registerAdmin(@Validated(OnCreate.class)
                                      @RequestBody final SignUpAdminRequest request) {
-        var user = userService.adminCreate(new UserDto(null, request.name, request.email, request.password),request.adminKey);
+        var user = userService.adminCreate(new UserDto(null, request.name, request.email, request.password), request.adminKey);
         return authService.login(new JwtRequest(user.getEmail(), request.password));
     }
 

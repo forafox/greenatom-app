@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
-        Optional<List<Message>> findByTopicId(Long topic_id);
+    Optional<List<Message>> findByTopicId(Long topic_id);
 }

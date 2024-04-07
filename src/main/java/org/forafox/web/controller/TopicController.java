@@ -2,18 +2,18 @@ package org.forafox.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.forafox.service.TopicService;
 import org.forafox.service.impl.MessageServiceImpl;
-import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.dto.TopicInListDTO;
-import org.forafox.web.dto.UserDto;
-import org.forafox.web.dto.auth.JwtRequest;
-import org.forafox.web.dto.auth.JwtResponse;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
+import org.forafox.web.requestRecord.TopicCreateRequest;
+import org.forafox.web.requestRecord.TopicWithDataRequest;
+import org.forafox.web.responseRecord.TopicListResponse;
+import org.forafox.web.responseRecord.TopicResponse;
+import org.forafox.web.responseRecord.TopicResponseWithMessages;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,13 +34,13 @@ public class TopicController {
     @PostMapping
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
     public TopicResponse createTopic(@Validated @RequestBody final TopicCreateRequest topicRequest) {
-        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title, null)));
+        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null)));
     }
 
     @PutMapping
     @Operation(description = "Update an existing topic by Id", operationId = "updateTopic", tags = "Client API")
     public TopicResponse updateTopic(@RequestBody final TopicWithDataRequest topicRequest) {
-        return dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id, topicRequest.title, null))));
+        return dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title(), null))));
     }
 
     @GetMapping("/{topic_id}")
@@ -55,16 +55,6 @@ public class TopicController {
     @Operation(description = "View all topics", operationId = "listAllTopics", tags = "Client API")
     public TopicListResponse listAllTopics() {
         return dtoListToResponse(topicMapper.toDtos(topicService.getAllTopics()));
-    }
-
-
-    record TopicResponse(@NotNull Long id, @NotNull String title) {
-    }
-
-    record TopicResponseWithMessages(@NotNull Long id, @NotNull String title, List<MessageDTO> messageDTOList) {
-    }
-
-    record TopicListResponse(List<TopicInListDTO> listAllTopics) {
     }
 
     private TopicListResponse dtoListToResponse(List<TopicDTO> topicDTO) {
@@ -83,12 +73,5 @@ public class TopicController {
         return new TopicResponse(dto.getId(), dto.getTitle());
     }
 
-    record TopicCreateRequest(@NotNull String title) {
-
-    }
-
-    record TopicWithDataRequest(@NotNull Long id, String title) {
-
-    }
 
 }

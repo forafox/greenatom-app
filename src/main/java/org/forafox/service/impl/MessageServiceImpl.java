@@ -35,7 +35,8 @@ public class MessageServiceImpl implements MessageService {
     public void deleteMessage(MessageDTO message) {
 //        messageRepository.delete(message);
     }
-    public List<Message> getAllMessagesByTopicId(Long topic_id){
+
+    public List<Message> getAllMessagesByTopicId(Long topic_id) {
         return messageRepository.findByTopicId(topic_id).orElseThrow(() -> new ResourceNotFoundException("Messages not found"));
     }
 
