@@ -14,7 +14,7 @@ public class Message {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "topic_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Topic topic;
 
     @Column(nullable = false)

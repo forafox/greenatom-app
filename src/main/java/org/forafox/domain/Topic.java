@@ -16,7 +16,4 @@ public class Topic {
     @Column(nullable = false)
     private String title;
 
-    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
-    private List<Message> messages;
-
 }

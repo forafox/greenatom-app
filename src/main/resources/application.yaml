@@ -2,13 +2,17 @@ spring:
   config:
     import: optional:file:.env[.properties]
   datasource:
-    url: jdbc:h2:mem:Students
+    name: atom_app
+    url: jdbc:h2:mem:atom_app
     username: ${datasourseUsername}
     password: ${datasoursePassword}
     driverClassName: org.h2.Driver
   jpa:
     hibernate:
       ddl-auto: create
+  h2:
+    console:
+      enabled: true
 security:
   jwt:
     secret: ${securityJwtSecret}

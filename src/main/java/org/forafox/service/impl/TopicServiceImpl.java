@@ -25,9 +25,8 @@ public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
 
     private final TopicMapper topicMapper;
+    private final MessageServiceImpl messageService;
     private final MessageMapper messageMapper;
-
-    private final MessageService messageService;
 
     @Override
     public List<Topic> getAllTopics() {
@@ -36,12 +35,13 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public TopicDTO createTopicEntity(TopicDTO topicDto) {
-        if (topicRepository.findByTitle(topicDto.getTitle()).isPresent()){
+        if (topicRepository.findByTitle(topicDto.getTitle()).isPresent()) {
             throw new IllegalStateException("Topic already exists.");
         }
         var topic = topicMapper.toEntity(topicDto, null);
         topic.setTitle(topic.getTitle());
-        return topicMapper.toDto(topicRepository.save(topic));
+        topic = topicRepository.save(topic);
+        messageService.createFirstTopicMessage(topic);
+        return topicMapper.toDto(topic);
     }
-
 }

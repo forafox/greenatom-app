@@ -23,7 +23,7 @@ public class TopicController {
     private final TopicService topicService;
 
     @PostMapping("/topic")
-    public TopicResponse login(@Validated @RequestBody final TopicRequest topicRequest) {
+    public TopicResponse topicCreate(@Validated @RequestBody final TopicRequest topicRequest) {
         return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title, null)));
     }
 

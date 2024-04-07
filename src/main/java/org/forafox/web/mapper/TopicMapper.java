@@ -16,12 +16,10 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class TopicMapper implements Mapper<Topic, TopicDTO> {
-    private final MessageMapper messageMapper;
 
     @Override
     public TopicDTO toDto(Topic entity) {
         var topicDto = new TopicDTO();
-        topicDto.setMessages(messageMapper.toDtos(entity.getMessages()));
         topicDto.setTitle(entity.getTitle());
         topicDto.setId(entity.getId());
         return topicDto;

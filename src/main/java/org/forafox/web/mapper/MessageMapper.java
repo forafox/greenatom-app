@@ -14,7 +14,7 @@ public class MessageMapper implements Mapper<Message, MessageDTO> {
     @Override
     public MessageDTO toDto(Message entity) {
         var messageDTO = new MessageDTO();
-        messageDTO.setTopicId(entity.getId());
+        messageDTO.setTopic(entity.getTopic());
         messageDTO.setText(entity.getText());
         messageDTO.setAuthor(entity.getAuthor());
         messageDTO.setCreatedAt(entity.getCreatedAt());
@@ -27,6 +27,8 @@ public class MessageMapper implements Mapper<Message, MessageDTO> {
         var message = new Message();
         message.setAuthor(dto.getAuthor());
         message.setText(dto.getText());
+        message.setTopic(dto.getTopic());
+        message.setCreatedAt(dto.getCreatedAt());
         return message;
     }
 
