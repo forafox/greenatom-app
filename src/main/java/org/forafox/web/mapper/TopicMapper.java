@@ -7,6 +7,7 @@ import org.forafox.domain.Topic;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.mapper.abstract_mapper.Mapper;
+import org.jboss.logging.Messages;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +17,15 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class TopicMapper implements Mapper<Topic, TopicDTO> {
+
+    public TopicDTO toDtoWithMessages(Topic entity, List<MessageDTO> messages) {
+        var topicDto = new TopicDTO();
+        topicDto.setMessages(messages);
+        topicDto.setTitle(entity.getTitle());
+        topicDto.setId(entity.getId());
+        return topicDto;
+    }
+
 
     @Override
     public TopicDTO toDto(Topic entity) {
@@ -31,6 +41,7 @@ public class TopicMapper implements Mapper<Topic, TopicDTO> {
         topic.setTitle(dto.getTitle());
         return topic;
     }
+
 
     @Override
     public List<TopicDTO> toDtos(List<Topic> entities) {

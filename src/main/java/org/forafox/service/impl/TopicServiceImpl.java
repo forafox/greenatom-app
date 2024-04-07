@@ -5,11 +5,13 @@ import org.forafox.domain.Message;
 import org.forafox.domain.Role;
 import org.forafox.domain.Topic;
 import org.forafox.domain.User;
+import org.forafox.domain.exception.ResourceNotFoundException;
 import org.forafox.repository.TopicRepository;
 import org.forafox.service.MessageService;
 import org.forafox.service.TopicService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
+import org.forafox.web.dto.TopicInListDTO;
 import org.forafox.web.dto.UserDto;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
@@ -44,4 +46,10 @@ public class TopicServiceImpl implements TopicService {
         messageService.createFirstTopicMessage(topic);
         return topicMapper.toDto(topic);
     }
+
+    @Override
+    public Topic getTopicByID(Long id) {
+        return topicRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Topic not found"));
+    }
+
 }

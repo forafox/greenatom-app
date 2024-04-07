@@ -3,6 +3,7 @@ package org.forafox.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
 import org.forafox.domain.Topic;
+import org.forafox.domain.exception.ResourceNotFoundException;
 import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
 import org.forafox.web.dto.MessageDTO;
@@ -10,6 +11,7 @@ import org.forafox.web.mapper.MessageMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,9 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void deleteMessage(MessageDTO message) {
 //        messageRepository.delete(message);
+    }
+    public List<Message> getAllMessagesByTopicId(Long topic_id){
+        return messageRepository.findByTopicId(topic_id).orElseThrow(() -> new ResourceNotFoundException("Messages not found"));
     }
 
     private MessageDTO createMessageEntity(MessageDTO messageDTO) {
