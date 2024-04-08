@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
 import org.forafox.domain.Topic;
 import org.forafox.domain.exception.ResourceNotFoundException;
+import org.forafox.domain.exception.TopicIsEmptyException;
 import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
+import org.forafox.service.TopicService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.mapper.MessageMapper;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void deleteMessageById(Long messageId) {
+        if (messageIsLastInTopic(getMessageById(messageId).getTopic().getId())) {
+            throw new TopicIsEmptyException("An attempt to delete the last message in the topic!");
+        }
         messageRepository.delete(getMessageById(messageId));
     }
+
+    private boolean messageIsLastInTopic(Long topicId) {
+        return getAllMessagesByTopicId(topicId).size()==1;
+    }
+
     @Override
     public Message updateMessageById(MessageDTO messageDTO) {
         var message = getMessageById(messageDTO.getId());
