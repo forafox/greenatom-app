@@ -1,6 +1,8 @@
 package org.forafox.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.boot.json.JsonParseException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Date;
 
@@ -43,7 +46,8 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class, IllegalArgumentException.class,
+            InvalidDataAccessApiUsageException.class, MethodArgumentTypeMismatchException.class, ConstraintViolationException.class})
     public ResponseEntity<ErrorMessage> jsonParseException(Exception ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), INVALID_INPUT_EXCEPTION, ex.getMessage());
 
@@ -53,7 +57,6 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> globalExceptionHandler(Exception ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), new Date(), request.getDescription(false), ex.getMessage());
-
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

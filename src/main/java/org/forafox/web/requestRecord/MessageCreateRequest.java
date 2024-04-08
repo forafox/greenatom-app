@@ -1,4 +1,6 @@
 package org.forafox.web.requestRecord;
 
-public record MessageCreateRequest(String text, String author) {
+import jakarta.validation.constraints.NotBlank;
+
+public record MessageCreateRequest(@NotBlank String text, @NotBlank String author) {
 }

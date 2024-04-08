@@ -2,8 +2,8 @@ package org.forafox.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.forafox.exception.ErrorMessage;
 import org.forafox.service.impl.MessageServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class MessageController {
 
     @DeleteMapping("/{messageId}")
     @Operation(description = "Delete an existing message by Id", operationId = "deleteMessage", tags = "Client API")
-    public ResponseEntity<String> deleteMessage(@PathVariable Long messageId) {
+    public ResponseEntity<String> deleteMessage(@PathVariable @Min(0) Long messageId) {
         messageService.deleteMessageById(messageId);
         return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);
     }
