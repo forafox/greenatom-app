@@ -14,10 +14,7 @@ import org.forafox.web.requestRecord.MessageCreateRequest;
 import org.forafox.web.requestRecord.MessageUpdateRequest;
 import org.forafox.web.requestRecord.TopicCreateRequest;
 import org.forafox.web.requestRecord.TopicUpdateRequest;
-import org.forafox.web.responseRecord.MessageResponse;
-import org.forafox.web.responseRecord.TopicListResponse;
-import org.forafox.web.responseRecord.TopicResponse;
-import org.forafox.web.responseRecord.TopicResponseWithMessages;
+import org.forafox.web.responseRecord.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +50,13 @@ public class TopicController {
         var topics = topicService.getTopicByID(topic_id);
         var messagesDTO = messageMapper.toDtos(messageService.getAllMessagesByTopicId(topic_id));
         return dtoToResponseWithMessages(topicMapper.toDtoWithMessages(topics, messagesDTO));
+    }
+
+    @DeleteMapping("/{topic_id}")
+    @Operation(description = "Delete an existing topic by Id", operationId = "deleteTopic", tags = "Client API")
+    public TopicDeleteResponse deleteTopic(@PathVariable Long topic_id) {
+        topicService.deleteTopicById(topic_id);
+        return new TopicDeleteResponse("Succesfull", "Delete topic");
     }
 
     @GetMapping

@@ -3,32 +3,23 @@ package org.forafox.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.forafox.service.TopicService;
 import org.forafox.service.impl.MessageServiceImpl;
-import org.forafox.web.dto.MessageDTO;
-import org.forafox.web.dto.TopicDTO;
-import org.forafox.web.mapper.MessageMapper;
-import org.forafox.web.mapper.TopicMapper;
-import org.forafox.web.requestRecord.MessageCreateRequest;
-import org.forafox.web.requestRecord.TopicCreateRequest;
-import org.forafox.web.responseRecord.MessageResponse;
-import org.forafox.web.responseRecord.TopicResponse;
+import org.forafox.web.responseRecord.MessageDeleteResponse;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/topic/")
+@RequestMapping("/message")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Message controller", description = "Topic API")
 public class MessageController {
-    private final TopicService topicService;
-    private final TopicMapper topicMapper;
     private final MessageServiceImpl messageService;
-    private final MessageMapper messageMapper;
 
-
+    @DeleteMapping("/{messageId}")
+    @Operation(description = "Delete an existing message by Id", operationId = "deleteMessage", tags = "Client API")
+    public MessageDeleteResponse deleteMessage(@PathVariable Long messageId) {
+        messageService.deleteMessageById(messageId);
+        return new MessageDeleteResponse("Succesfull", "Delete message");
+    }
 }

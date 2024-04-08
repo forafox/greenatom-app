@@ -37,6 +37,10 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    public void deleteMessageById(Long messageId) {
+        messageRepository.delete(getMessageById(messageId));
+    }
+    @Override
     public Message updateMessageById(MessageDTO messageDTO) {
         var message = getMessageById(messageDTO.getId());
         message.setTopic(messageDTO.getTopic());
