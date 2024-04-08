@@ -2,12 +2,10 @@ package org.forafox.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
-import org.forafox.domain.Topic;
-import org.forafox.domain.exception.ResourceNotFoundException;
-import org.forafox.domain.exception.TopicIsEmptyException;
+import org.forafox.exception.ResourceNotFoundException;
+import org.forafox.exception.TopicIsEmptyException;
 import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
-import org.forafox.service.TopicService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.mapper.MessageMapper;
 import org.springframework.stereotype.Service;

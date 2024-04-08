@@ -1,4 +1,4 @@
-package org.forafox.domain.exception;
+package org.forafox.exception;
 
 public class AccessDeniedException extends RuntimeException {
     public AccessDeniedException() {

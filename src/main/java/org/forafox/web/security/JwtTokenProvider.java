@@ -8,7 +8,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Role;
 import org.forafox.domain.User;
-import org.forafox.domain.exception.AccessDeniedException;
+import org.forafox.exception.AccessDeniedException;
 import org.forafox.service.UserService;
 import org.forafox.service.props.JwtProperties;
 import org.forafox.web.dto.auth.JwtResponse;

@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Role;
 import org.forafox.domain.User;
-import org.forafox.domain.exception.ResourceNotFoundException;
+import org.forafox.exception.ResourceNotFoundException;
 import org.forafox.repository.UserRepository;
 import org.forafox.service.UserService;
 import org.forafox.service.props.AdminProperties;
