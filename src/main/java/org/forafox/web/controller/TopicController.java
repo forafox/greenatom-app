@@ -36,7 +36,7 @@ public class TopicController {
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
     public TopicResponse createTopic(@Validated @RequestBody final TopicCreateRequest topicRequest) {
         var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
-        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null),message));
+        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null), message));
     }
 
     @PutMapping
@@ -47,7 +47,7 @@ public class TopicController {
 
     @GetMapping("/{topic_id}")
     @Operation(description = "Shows all messages in topic", operationId = "ListTopicMessages", tags = "Client API")
-    public TopicResponseWithMessages getTopicByID(@PathVariable Long topic_id) {
+    public TopicWithMessagesResponse getTopicByID(@PathVariable Long topic_id) {
         var topics = topicService.getTopicByID(topic_id);
         var messagesDTO = messageMapper.toDtos(messageService.getAllMessagesByTopicId(topic_id));
         return dtoToResponseWithMessages(topicMapper.toDtoWithMessages(topics, messagesDTO));
@@ -89,8 +89,8 @@ public class TopicController {
         return new TopicListResponse(listAllTopics);
     }
 
-    private TopicResponseWithMessages dtoToResponseWithMessages(TopicDTO dto) {
-        return new TopicResponseWithMessages(dto.getId(), dto.getTitle(), dto.getMessages());
+    private TopicWithMessagesResponse dtoToResponseWithMessages(TopicDTO dto) {
+        return new TopicWithMessagesResponse(dto.getId(), dto.getTitle(), messageDtoToMessageInTopicResponse(dto.getMessages()));
     }
 
     private TopicResponse dtoToResponse(TopicDTO dto) {
@@ -99,6 +99,12 @@ public class TopicController {
 
     private MessageResponse messageDtoToResponse(MessageDTO messageDTO) {
         return new MessageResponse(messageDTO.getId(), messageDTO.getText(), messageDTO.getAuthor(), messageDTO.getCreatedAt());
+    }
+
+    private List<MessageInTopicResponse> messageDtoToMessageInTopicResponse(List<MessageDTO> messageDTO) {
+        return messageDTO.stream().
+                map(dto -> new MessageInTopicResponse(dto.getId(), dto.getAuthor(), dto.getText(), dto.getCreatedAt()))
+                .collect(Collectors.toList());
     }
 
 }
