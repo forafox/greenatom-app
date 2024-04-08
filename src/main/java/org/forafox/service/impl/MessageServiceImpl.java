@@ -36,6 +36,21 @@ public class MessageServiceImpl implements MessageService {
 //        messageRepository.delete(message);
     }
 
+    @Override
+    public Message updateMessageById(MessageDTO messageDTO) {
+        var message = getMessageById(messageDTO.getId());
+        message.setTopic(messageDTO.getTopic());
+        message.setText(messageDTO.getText());
+        message.setAuthor(messageDTO.getAuthor());
+        message.setCreatedAt(messageDTO.getCreatedAt());
+        return messageRepository.save(message);
+    }
+
+    @Override
+    public Message getMessageById(Long id) {
+        return messageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Message not found"));
+    }
+
     public List<Message> getAllMessagesByTopicId(Long topic_id) {
         return messageRepository.findByTopicId(topic_id).orElseThrow(() -> new ResourceNotFoundException("Messages not found"));
     }
