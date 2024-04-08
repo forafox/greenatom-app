@@ -63,14 +63,14 @@ public class TopicController {
 
     @PostMapping("/{topicId}/message")
     @Operation(description = "Create a new message in topic", operationId = "CreateMessage", tags = "Client API")
-    public MessageResponse createTopic(@PathVariable Long topicId, @Validated @RequestBody final MessageCreateRequest messageRequest) {
+    public MessageResponse createMessageInTopic(@PathVariable Long topicId, @Validated @RequestBody final MessageCreateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
         return messageDtoToResponse(messageService.createMessage(new MessageDTO(null, topic, messageRequest.author(), messageRequest.text(), null)));
     }
 
     @PutMapping("/{topicId}/message")
     @Operation(description = "Update an existing message by Id", operationId = "updateMessage", tags = "Client API")
-    public MessageResponse createTopic(@PathVariable Long topicId, @RequestBody final MessageUpdateRequest messageRequest) {
+    public MessageResponse updateMessageInTopic(@PathVariable Long topicId, @RequestBody final MessageUpdateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
         var messageDTO = new MessageDTO(messageRequest.id(), topic, messageRequest.author(), messageRequest.text(), messageRequest.created());
         return messageDtoToResponse(messageMapper.toDto(messageService.updateMessageById(messageDTO)));
