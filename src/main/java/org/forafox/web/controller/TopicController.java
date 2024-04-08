@@ -35,7 +35,8 @@ public class TopicController {
     @PostMapping
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
     public TopicResponse createTopic(@Validated @RequestBody final TopicCreateRequest topicRequest) {
-        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null)));
+        var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
+        return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null),message));
     }
 
     @PutMapping

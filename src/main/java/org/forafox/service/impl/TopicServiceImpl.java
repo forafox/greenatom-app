@@ -5,6 +5,7 @@ import org.forafox.domain.Topic;
 import org.forafox.domain.exception.ResourceNotFoundException;
 import org.forafox.repository.TopicRepository;
 import org.forafox.service.TopicService;
+import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
@@ -27,14 +28,15 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public TopicDTO createTopicEntity(TopicDTO topicDto) {
+    public TopicDTO createTopicEntity(TopicDTO topicDto, MessageDTO message) {
         if (topicRepository.findByTitle(topicDto.getTitle()).isPresent()) {
             throw new IllegalStateException("Topic already exists.");
         }
         var topic = topicMapper.toEntity(topicDto, null);
         topic.setTitle(topic.getTitle());
         topic = topicRepository.save(topic);
-        messageService.createFirstTopicMessage(topic);
+        message.setTopic(topic);
+        messageService.createMessage(message);
         return topicMapper.toDto(topic);
     }
 

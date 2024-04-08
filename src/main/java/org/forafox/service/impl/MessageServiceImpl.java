@@ -25,18 +25,6 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDTO editMessage(MessageDTO message, String newText) {
-//        message.setText(newText);
-//        return messageRepository.save(message);
-        return null;
-    }
-
-    @Override
-    public void deleteMessage(MessageDTO message) {
-//        messageRepository.delete(message);
-    }
-
-    @Override
     public void deleteMessageById(Long messageId) {
         messageRepository.delete(getMessageById(messageId));
     }
@@ -63,11 +51,6 @@ public class MessageServiceImpl implements MessageService {
         setDateIfNullInMessage(messageDTO);
         var message = messageMapper.toEntity(messageDTO, null);
         return messageMapper.toDto(messageRepository.save(message));
-    }
-
-    public void createFirstTopicMessage(Topic topic) {
-        var message = new MessageDTO(null, topic, "Admin", "First topic message!", null);
-        createMessageEntity(message);
     }
 
     private void setDateIfNullInMessage(MessageDTO message) {
