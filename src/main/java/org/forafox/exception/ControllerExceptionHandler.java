@@ -20,6 +20,7 @@ public class ControllerExceptionHandler {
     private final String VALIDATION_EXCEPTION = "Validation exception";
     private final String INVALID_INPUT_EXCEPTION = "Invalid input";
     private final String NOT_FOUND_EXCEPTION = "Not found";
+    private final String CONFLICT_EXCEPTION = "Conflict with the current state of the target resource.";
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
@@ -33,6 +34,13 @@ public class ControllerExceptionHandler {
         ErrorMessage message = new ErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY.value(), new Date(), VALIDATION_EXCEPTION, ex.getMessage());
 
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(TopicIsEmptyException.class)
+    public ResponseEntity<ErrorMessage> topicIsEmptyException(Exception ex, WebRequest request) {
+        ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), new Date(), CONFLICT_EXCEPTION, ex.getMessage());
+
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = {JsonParseException.class, HttpMessageNotReadableException.class})
