@@ -15,6 +15,8 @@ import org.forafox.web.requestRecord.MessageUpdateRequest;
 import org.forafox.web.requestRecord.TopicCreateRequest;
 import org.forafox.web.requestRecord.TopicUpdateRequest;
 import org.forafox.web.responseRecord.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +36,7 @@ public class TopicController {
 
     @PostMapping
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
-    public TopicResponse createTopic(@Validated @RequestBody final TopicCreateRequest topicRequest) {
+    public TopicResponse createTopic(@RequestBody final TopicCreateRequest topicRequest) {
         var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
         return dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null), message));
     }
@@ -55,9 +57,9 @@ public class TopicController {
 
     @DeleteMapping("/{topic_id}")
     @Operation(description = "Delete an existing topic by Id", operationId = "deleteTopic", tags = "Client API")
-    public TopicDeleteResponse deleteTopic(@PathVariable Long topic_id) {
+    public ResponseEntity<String> deleteTopic(@PathVariable Long topic_id) {
         topicService.deleteTopicById(topic_id);
-        return new TopicDeleteResponse("Succesfull", "Delete topic");
+        return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping
@@ -68,7 +70,7 @@ public class TopicController {
 
     @PostMapping("/{topicId}/message")
     @Operation(description = "Create a new message in topic", operationId = "CreateMessage", tags = "Client API")
-    public MessageResponse createMessageInTopic(@PathVariable Long topicId, @Validated @RequestBody final MessageCreateRequest messageRequest) {
+    public MessageResponse createMessageInTopic(@PathVariable Long topicId, @RequestBody final MessageCreateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
         return messageDtoToResponse(messageService.createMessage(new MessageDTO(null, topic, messageRequest.author(), messageRequest.text(), null)));
     }
