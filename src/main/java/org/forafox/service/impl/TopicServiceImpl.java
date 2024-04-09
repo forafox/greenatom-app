@@ -3,6 +3,8 @@ package org.forafox.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
 import org.forafox.domain.Topic;
+import org.forafox.exception.AccessMessageDeniedException;
+import org.forafox.exception.AccessTopicDeniedException;
 import org.forafox.exception.ResourceNotFoundException;
 import org.forafox.repository.TopicRepository;
 import org.forafox.service.TopicService;
@@ -11,6 +13,7 @@ import org.forafox.web.dto.MessageSliceDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.dto.TopicSliceDTO;
 import org.forafox.web.mapper.TopicMapper;
+import org.forafox.web.security.principal.AuthenticationFacade;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -20,16 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TopicServiceImpl implements TopicService {
-
+    private final UserServiceImpl userService;
     private final TopicRepository topicRepository;
-
+    private final AuthenticationFacade authenticationFacade;
     private final TopicMapper topicMapper;
     private final MessageServiceImpl messageService;
 
     @Override
     public TopicSliceDTO getAllSliceTopicsDTO(int offset, int limit) {
-        Slice<Topic>  topicsSlice =  topicRepository.findAllSlice(PageRequest.of(offset, limit));
-        return new TopicSliceDTO(topicsSlice.getContent(),topicsSlice.getPageable());
+        Slice<Topic> topicsSlice = topicRepository.findAllSlice(PageRequest.of(offset, limit));
+        return new TopicSliceDTO(topicsSlice.getContent(), topicsSlice.getPageable());
 
     }
 
@@ -45,6 +48,7 @@ public class TopicServiceImpl implements TopicService {
         }
         var topic = topicMapper.toEntity(topicDto, null);
         topic.setTitle(topic.getTitle());
+        topic.setUser(userService.getByEmail(authenticationFacade.getAuthName()));
         topic = topicRepository.save(topic);
         message.setTopic(topic);
         messageService.createMessage(message);
@@ -58,6 +62,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Topic updateTopicById(TopicDTO topicDTO) {
+        if (!getTopicByID(topicDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+            throw new AccessTopicDeniedException("You are not the owner of this topic!");
+        }
         var topic = getTopicByID(topicDTO.getId());
         topic.setTitle(topicDTO.getTitle());
         return topicRepository.save(topic);
@@ -66,6 +73,10 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public void deleteTopicById(Long topicId) {
+        if (!getTopicByID(topicId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+            throw new AccessTopicDeniedException("You are not the owner of this topic!");
+        }
         topicRepository.delete(getTopicByID(topicId));
     }
+
 }

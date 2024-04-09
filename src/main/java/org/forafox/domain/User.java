@@ -25,8 +25,6 @@ public class User implements UserDetails {
 
     private String password;
 
-    private Long telegramChatId;
-
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "users_roles")

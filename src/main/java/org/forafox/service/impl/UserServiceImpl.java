@@ -10,10 +10,15 @@ import org.forafox.service.UserService;
 import org.forafox.service.props.AdminProperties;
 import org.forafox.web.dto.UserDto;
 import org.forafox.web.mapper.UserMapper;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.Set;
 
 @Service

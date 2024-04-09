@@ -2,6 +2,7 @@ package org.forafox.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
+import org.forafox.exception.AccessMessageDeniedException;
 import org.forafox.exception.ResourceNotFoundException;
 import org.forafox.exception.TopicIsEmptyException;
 import org.forafox.repository.MessageRepository;
@@ -9,6 +10,7 @@ import org.forafox.service.MessageService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.MessageSliceDTO;
 import org.forafox.web.mapper.MessageMapper;
+import org.forafox.web.security.principal.AuthenticationFacade;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
+    private final UserServiceImpl userService;
+    private final AuthenticationFacade authenticationFacade;
 
     @Override
     public MessageDTO createMessage(MessageDTO message) {
@@ -35,6 +39,12 @@ public class MessageServiceImpl implements MessageService {
         if (messageIsLastInTopic(getMessageById(messageId).getTopic().getId())) {
             throw new TopicIsEmptyException("An attempt to delete the last message in the topic!");
         }
+        if (!getMessageById(messageId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+            throw new AccessMessageDeniedException("You are not the owner of this message!");
+        }
+        if (messageRepository.findById(messageId).isEmpty()) {
+            throw new ResourceNotFoundException("Messages not found");
+        }
         messageRepository.delete(getMessageById(messageId));
     }
 
@@ -44,6 +54,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Message updateMessageById(MessageDTO messageDTO) {
+        if (!getMessageById(messageDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+            throw new AccessMessageDeniedException("You are not the owner of this message!");
+        }
         var message = getMessageById(messageDTO.getId());
         message.setTopic(messageDTO.getTopic());
         message.setText(messageDTO.getText());
@@ -64,6 +77,7 @@ public class MessageServiceImpl implements MessageService {
     private MessageDTO createMessageEntity(MessageDTO messageDTO) {
         setDateIfNullInMessage(messageDTO);
         var message = messageMapper.toEntity(messageDTO, null);
+        message.setUser(userService.getByEmail(authenticationFacade.getAuthName()));
         return messageMapper.toDto(messageRepository.save(message));
     }
 
@@ -75,6 +89,7 @@ public class MessageServiceImpl implements MessageService {
 
     public MessageSliceDTO getMessageSliceDTOByTopicId(Long topicId, int pageOffset, int pageLimit) {
         Slice<Message> messageSlice = messageRepository.findAllSliceByTopicId(topicId, PageRequest.of(pageOffset, pageLimit));
-        return new MessageSliceDTO(messageSlice.getContent(),messageSlice.getPageable());
+        return new MessageSliceDTO(messageSlice.getContent(), messageSlice.getPageable());
     }
+
 }

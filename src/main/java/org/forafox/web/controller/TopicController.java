@@ -74,9 +74,7 @@ public class TopicController {
 
     @GetMapping("")
     @Operation(description = "View all topics", operationId = "listAllTopics", tags = "Client API")
-    public TopicListResponse listAllTopics(Principal principal) {
-        System.out.println(principal.getName());
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    public TopicListResponse listAllTopics() {
         return responseService.dtoListToResponse(topicMapper.toDtos(topicService.getAllTopics()));
     }
 

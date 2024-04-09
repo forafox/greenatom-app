@@ -2,6 +2,8 @@ package org.forafox.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Data
@@ -13,5 +15,10 @@ public class Topic {
 
     @Column(nullable = false)
     private String title;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    private User user;
 
 }

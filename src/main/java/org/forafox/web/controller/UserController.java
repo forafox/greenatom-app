@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Operation(description = "Get user by id")
-    @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public GetUserResponse getUserById(@PathVariable @Min(0) Long id) {
         return dtoToResponse(userMapper.toDto(userService.getById(id)));
     }

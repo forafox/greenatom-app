@@ -20,6 +20,11 @@ public class Message {
     @JoinColumn(nullable = false)
     private Topic topic;
 
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(nullable = false)
+    private User user;
+
     @Column(nullable = false)
     private String author;
 
