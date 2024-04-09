@@ -25,7 +25,9 @@ public class JwtTokenFilter extends GenericFilterBean {
                          final FilterChain filterChain) {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String bearerToken = httpRequest.getHeader("Authorization");
-        if (httpRequest.getServletPath().contains("login") || httpRequest.getServletPath().contains("register") || httpRequest.getServletPath().contains("swagger")|| httpRequest.getServletPath().contains("docs") || httpRequest.getServletPath().contains("poling") ) {
+        if (httpRequest.getServletPath().contains("login") || httpRequest.getServletPath().contains("register")
+                || httpRequest.getServletPath().contains("swagger") || httpRequest.getServletPath().contains("docs")
+                || httpRequest.getServletPath().contains("h2")) {
             logger.info("Request to /login or /register. Passing it on without checking JWT");
             filterChain.doFilter(servletRequest, servletResponse);
             return;

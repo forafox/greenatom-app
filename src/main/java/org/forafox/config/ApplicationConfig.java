@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -66,15 +67,16 @@ public class ApplicationConfig {
                                         }))
                 .authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers("/api/v1/auth/**")
+                                .requestMatchers("/auth/**")
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                                 .permitAll()
                                 .requestMatchers("/actuator", "/actuator/**", "/actuator/prometheus", "/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/yandex/*")
+                                .requestMatchers("/h2-console/**")
                                 .permitAll()
-                                .anyRequest().authenticated())
+                                .anyRequest().authenticated()).headers(headers -> headers
+                        .addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),
                         UsernamePasswordAuthenticationFilter.class);
