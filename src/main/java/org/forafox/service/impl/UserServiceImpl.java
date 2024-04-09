@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         if (!adminKey.equals(adminProperties.getKey())) {
             throw new IllegalStateException("The admin key is incorrect!");
         }
-        return createUserEntity(userDto);
+        return createAdminEntity(userDto);
     }
 
     @PostConstruct
@@ -75,6 +75,13 @@ public class UserServiceImpl implements UserService {
     private UserDto createUserEntity(UserDto userDto) {
         User user = userMapper.toEntity(userDto, null);
         user.setRoles(Set.of(Role.USER));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userMapper.toDto(userRepository.save(user));
+    }
+
+    private UserDto createAdminEntity(UserDto userDto) {
+        User user = userMapper.toEntity(userDto, null);
+        user.setRoles(Set.of(Role.ADMIN, Role.USER));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userMapper.toDto(userRepository.save(user));
     }

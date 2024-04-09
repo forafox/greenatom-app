@@ -18,9 +18,11 @@ import org.forafox.web.requestRecord.TopicUpdateRequest;
 import org.forafox.web.responseRecord.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,7 +74,9 @@ public class TopicController {
 
     @GetMapping("")
     @Operation(description = "View all topics", operationId = "listAllTopics", tags = "Client API")
-    public TopicListResponse listAllTopics() {
+    public TopicListResponse listAllTopics(Principal principal) {
+        System.out.println(principal.getName());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return responseService.dtoListToResponse(topicMapper.toDtos(topicService.getAllTopics()));
     }
 
