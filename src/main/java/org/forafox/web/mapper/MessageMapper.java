@@ -53,4 +53,5 @@ public class MessageMapper implements Mapper<Message, MessageDTO> {
             return List.of();
         }
     }
+
 }

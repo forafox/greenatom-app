@@ -7,12 +7,17 @@ import org.forafox.exception.TopicIsEmptyException;
 import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
 import org.forafox.web.dto.MessageDTO;
+import org.forafox.web.dto.MessageSliceDTO;
 import org.forafox.web.mapper.MessageMapper;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,8 +73,8 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
-
-    public List<Message> getSliceMessageByTopicId(Long topicId, int pageOffset, int pageLimit) {
-        return messageRepository.findAllSliceByTopicId(topicId, PageRequest.of(pageOffset, pageLimit)).toList();
+    public MessageSliceDTO getMessageSliceDTOByTopicId(Long topicId, int pageOffset, int pageLimit) {
+        Slice<Message> messageSlice = messageRepository.findAllSliceByTopicId(topicId, PageRequest.of(pageOffset, pageLimit));
+        return new MessageSliceDTO(messageSlice.getContent(),messageSlice.getPageable());
     }
 }

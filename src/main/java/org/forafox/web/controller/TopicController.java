@@ -8,9 +8,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.forafox.service.TopicService;
 import org.forafox.service.impl.MessageServiceImpl;
-import org.forafox.web.dto.MessageDTO;
-import org.forafox.web.dto.TopicDTO;
-import org.forafox.web.dto.TopicInListDTO;
+import org.forafox.web.dto.*;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
 import org.forafox.web.requestRecord.MessageCreateRequest;
@@ -18,7 +16,6 @@ import org.forafox.web.requestRecord.MessageUpdateRequest;
 import org.forafox.web.requestRecord.TopicCreateRequest;
 import org.forafox.web.requestRecord.TopicUpdateRequest;
 import org.forafox.web.responseRecord.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -53,20 +50,16 @@ public class TopicController {
 
     @GetMapping("/{topic_id}")
     @Operation(description = "Shows all messages in topic", operationId = "ListTopicMessages", tags = "Client API")
-    public TopicWithMessagesResponse getMessageByID(@PathVariable @Min(0) Long topic_id) {
-        var topics = topicService.getTopicByID(topic_id);
-        var messagesDTO = messageMapper.toDtos(messageService.getAllMessagesByTopicId(topic_id));
-        return dtoToResponseWithMessages(topicMapper.toDtoWithMessages(topics, messagesDTO));
+    public List<MessageDTO> getMessageByID(@PathVariable @Min(0) Long topic_id) {
+        return messageMapper.toDtos(messageService.getAllMessagesByTopicId(topic_id));
     }
 
     @GetMapping("/{topic_id}/{page_offset}/{page_limit}")
     @Operation(description = "Shows all messages in topic2", operationId = "ListTopicMessages2", tags = "Client API")
-    public TopicWithMessagesResponse getPageListByID(@PathVariable @Min(0) Long topic_id,
-                                                     @PathVariable @Min(0) int page_offset,
-                                                     @PathVariable @Min(1) @Max(100) int page_limit) {
-        var topics = topicService.getTopicByID(topic_id);
-        var messagesDTO = messageMapper.toDtos(messageService.getSliceMessageByTopicId(topic_id, page_offset, page_limit));
-        return dtoToResponseWithMessages(topicMapper.toDtoWithMessages(topics, messagesDTO));
+    public MessageSliceDTO getPageListByID(@PathVariable @Min(0) Long topic_id,
+                                           @PathVariable @Min(0) int page_offset,
+                                           @PathVariable @Min(1) @Max(100) int page_limit) {
+        return messageService.getMessageSliceDTOByTopicId(topic_id, page_offset, page_limit);
     }
 
     @DeleteMapping("/{topic_id}")
@@ -84,9 +77,9 @@ public class TopicController {
 
     @GetMapping("/{page_offset}/{page_limit}")
     @Operation(description = "View all topics2", operationId = "listAllTopics2", tags = "Client API2")
-    public TopicListResponse pageListTopics(@PathVariable @Min(0) int page_offset,
-                                            @PathVariable @Min(0) int page_limit) {
-        return dtoListToResponse(topicMapper.toDtos(topicService.getAllSliceTopics(page_offset, page_limit)));
+    public TopicSliceDTO pageListTopics(@PathVariable @Min(0) int page_offset,
+                                        @PathVariable @Min(0) int page_limit) {
+        return topicService.getAllSliceTopicsDTO(page_offset, page_limit);
     }
 
     @PostMapping("/{topicId}/message")
@@ -110,10 +103,6 @@ public class TopicController {
                 .collect(Collectors.toList());
 
         return new TopicListResponse(listAllTopics);
-    }
-
-    private TopicWithMessagesResponse dtoToResponseWithMessages(TopicDTO dto) {
-        return new TopicWithMessagesResponse(dto.getId(), dto.getTitle(), messageDtoToMessageInTopicResponse(dto.getMessages()));
     }
 
     private TopicResponse dtoToResponse(TopicDTO dto) {
