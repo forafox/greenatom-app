@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import java.security.SignatureException;
+
 @AllArgsConstructor
 public class JwtTokenFilter extends GenericFilterBean {
 
@@ -47,12 +49,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                 httpResponse.getWriter().println("No JWT token");
                 return;
             }
-        } catch (MalformedJwtException e) {
-            var httpResponse = (HttpServletResponse) servletResponse;
-            httpResponse.setStatus(401);
-            httpResponse.getWriter().println("Invalid JWT token");
-            return;
-        } catch (ExpiredJwtException e) {
+        } catch (MalformedJwtException | ExpiredJwtException e) {
             var httpResponse = (HttpServletResponse) servletResponse;
             httpResponse.setStatus(401);
             httpResponse.getWriter().println("Invalid JWT token");

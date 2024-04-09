@@ -21,3 +21,6 @@ security:
   admin:
     data:
       key: ${adminDataKey}
+      adminUsername: ${adminUsername}
+      adminPassword: ${adminPassword}
+      adminName: ${adminName}

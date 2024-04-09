@@ -32,7 +32,7 @@ public class Message {
     private String text;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private Date createdAt;
 
 }

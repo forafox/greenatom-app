@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "security.admin.data")
 public class AdminProperties {
     private String key;
+    private String adminUsername;
+    private String adminPassword;
+    private String adminName;
 }
