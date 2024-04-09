@@ -12,6 +12,8 @@ import java.util.List;
 public interface TopicService {
     List<Topic> getAllTopics();
 
+    List<Topic> getAllSliceTopics(int offset, int limit);
+
     TopicDTO createTopicEntity(TopicDTO topic, MessageDTO messageDTO);
 
     Topic getTopicByID(Long id);

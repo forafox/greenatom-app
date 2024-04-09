@@ -8,6 +8,7 @@ import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.mapper.MessageMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,7 +34,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private boolean messageIsLastInTopic(Long topicId) {
-        return getAllMessagesByTopicId(topicId).size()==1;
+        return getAllMessagesByTopicId(topicId).size() == 1;
     }
 
     @Override
@@ -68,4 +69,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
 
+    public List<Message> getSliceMessageByTopicId(Long topicId, int pageOffset, int pageLimit) {
+        return messageRepository.findAllSliceByTopicId(topicId, PageRequest.of(pageOffset, pageLimit)).toList();
+    }
 }

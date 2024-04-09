@@ -8,6 +8,7 @@ import org.forafox.service.TopicService;
 import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.mapper.TopicMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public class TopicServiceImpl implements TopicService {
 
     private final TopicMapper topicMapper;
     private final MessageServiceImpl messageService;
+
+
+    public List<Topic> getAllSliceTopics(int offset,int limit) {
+        return topicRepository.findAllSlice(PageRequest.of(offset, limit)).toList();
+    }
 
     @Override
     public List<Topic> getAllTopics() {
@@ -50,6 +56,7 @@ public class TopicServiceImpl implements TopicService {
         topic.setTitle(topicDTO.getTitle());
         return topicRepository.save(topic);
     }
+
 
     @Override
     public void deleteTopicById(Long topicId) {
