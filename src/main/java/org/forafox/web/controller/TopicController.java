@@ -33,19 +33,18 @@ public class TopicController {
     private final TopicMapper topicMapper;
     private final MessageServiceImpl messageService;
     private final MessageMapper messageMapper;
-    private final ResponseService responseService;
 
     @PostMapping
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
-    public TopicResponse createTopic(@Valid @RequestBody final TopicCreateRequest topicRequest) {
+    public TopicDTO createTopic(@Valid @RequestBody final TopicCreateRequest topicRequest) {
         var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
-        return responseService.dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title()), message));
+        return topicService.createTopicEntity(new TopicDTO(null, topicRequest.title()), message);
     }
 
     @PutMapping
     @Operation(description = "Update an existing topic by Id", operationId = "updateTopic", tags = "Client API")
-    public TopicResponse updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
-        return responseService.dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title()))));
+    public TopicDTO updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
+        return topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title())));
     }
 
     @GetMapping("/{topic_id}")
@@ -71,8 +70,8 @@ public class TopicController {
 
     @GetMapping("")
     @Operation(description = "View all topics", operationId = "listAllTopics", tags = "Client API")
-    public TopicListResponse listAllTopics() {
-        return responseService.dtoListToResponse(topicMapper.toDtos(topicService.getAllTopics()));
+    public List<TopicDTO> listAllTopics() {
+        return topicMapper.toDtos(topicService.getAllTopics());
     }
 
     @GetMapping("/{page_offset}/{page_limit}")
@@ -84,17 +83,17 @@ public class TopicController {
 
     @PostMapping("/{topicId}/message")
     @Operation(description = "Create a new message in topic", operationId = "CreateMessage", tags = "Client API")
-    public MessageResponse createMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageCreateRequest messageRequest) {
+    public MessageDTO createMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageCreateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
-        return responseService.messageDtoToResponse(messageService.createMessage(new MessageDTO(null, topic.getTitle(), messageRequest.author(), messageRequest.text(), null),topic));
+        return messageService.createMessage(new MessageDTO(null, topic.getTitle(), messageRequest.author(), messageRequest.text(), null),topic);
     }
 
     @PutMapping("/{topicId}/message")
     @Operation(description = "Update an existing message by Id", operationId = "updateMessage", tags = "Client API")
-    public MessageResponse updateMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageUpdateRequest messageRequest) {
+    public MessageDTO updateMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageUpdateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
         var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());
-        return responseService.messageDtoToResponse(messageMapper.toDto(messageService.updateMessageById(messageDTO)));
+        return messageMapper.toDto(messageService.updateMessageById(messageDTO));
     }
 
 
