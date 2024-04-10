@@ -1,6 +1,7 @@
 package org.forafox.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -53,12 +54,13 @@ public class AuthController {
         var user = userService.adminCreate(new UserDto(null, request.name(), request.email(), request.password()), request.adminKey());
         return authService.login(new JwtRequest(user.getEmail(), request.password()));
     }
-
     @PostMapping("/refresh")
     @Operation(summary = "Refresh token",
             description = "Refreshes JWT token based on provided refresh token",
             operationId = "refresh")
-    public JwtResponse refresh(@Valid @RequestBody @NotBlank String refreshToken) {
+    public JwtResponse refresh(
+            @Valid @RequestBody @NotBlank
+            @Parameter(description = "Refresh token used to generate a new JWT token", required = true) String refreshToken) {
         return authService.refresh(refreshToken);
     }
 

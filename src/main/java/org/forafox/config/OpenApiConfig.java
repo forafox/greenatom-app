@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
                 )
         ),
         servers = {
-                @Server(url = "http://localhost", description = "Default Server URL"),
+                @Server(url = "http://localhost:8080", description = "Default Server URL"),
         },
         tags = {
                 @Tag(name = "Admin API", description = "API for administrators"),
@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
         }
 )
-
 @SecurityScheme(
         name = "JWT",
         type = SecuritySchemeType.HTTP,

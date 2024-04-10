@@ -1,6 +1,7 @@
 package org.forafox.web.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.constraints.Min;
@@ -29,7 +30,10 @@ public class AdminMessageController {
     @Operation(summary = "Delete message by ID",
             description = "Deletes an existing message by its ID",
             operationId = "deleteMessage",tags = "Admin API")
-    public ResponseEntity<String> deleteMessage(@PathVariable @Min(0) Long messageId) {
+    public ResponseEntity<String> deleteMessage(
+            @PathVariable
+            @Min(value = 0, message = "Message ID must be greater than or equal to 0")
+            @Parameter(description = "ID of the message to delete", required = true) Long messageId) {
         messageService.deleteMessageById(messageId);
         return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);
     }

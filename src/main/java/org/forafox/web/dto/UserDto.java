@@ -1,5 +1,6 @@
 package org.forafox.web.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,21 +14,26 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "DTO for User")
 public class UserDto {
 
-    @NotNull(message = "Id must be not null.")
+    @Schema(description = "Unique identifier of the user",accessMode = Schema.AccessMode.READ_ONLY)
+    @NotNull(message = "Id must not be null.")
     private Long id;
 
-    @NotBlank(message = "Name must be not null or empty.")
-    @Length(max = 255, message = "Name length must be smaller than 255 symbols.")
+    @Schema(description = "Name of the user")
+    @NotBlank(message = "Name must not be null or empty.")
+    @Length(max = 255, message = "Name length must be smaller than 255 characters.")
     private String name;
 
-    @NotBlank(message = "Username must be not null or empty.", groups = {OnCreate.class, OnUpdate.class})
-    @Length(max = 255, message = "Username length must be smaller than 255 symbols.")
+    @Schema(description = "Email address of the user")
+    @NotBlank(message = "Username must not be null or empty.", groups = {OnCreate.class, OnUpdate.class})
+    @Length(max = 255, message = "Username length must be smaller than 255 characters.")
     @Email
     private String email;
 
-    @NotBlank(message = "Password must be not null.")
-    @Length(max = 255, message = "Password length must be smaller than 255 symbols.")
+    @Schema(description = "Password of the user")
+    @NotBlank(message = "Password must not be null.")
+    @Length(max = 255, message = "Password length must be smaller than 255 characters.")
     private String password;
 }

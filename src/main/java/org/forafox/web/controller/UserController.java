@@ -2,6 +2,7 @@ package org.forafox.web.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
@@ -33,7 +34,10 @@ public class UserController {
             description = "Retrieves user information by their ID",
             operationId = "getUserById", tags = "Admin API")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public GetUserResponse getUserById(@PathVariable @Min(0) Long id) {
+    public GetUserResponse getUserById(
+            @PathVariable
+            @Min(value = 0, message = "User ID must be greater than or equal to 0")
+            @Parameter(description = "ID of the user to retrieve",required = true) Long id) {
         return dtoToResponse(userMapper.toDto(userService.getById(id)));
     }
 
