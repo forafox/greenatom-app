@@ -1,5 +1,8 @@
 package org.forafox.web.controller.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.forafox.service.impl.MessageServiceImpl;
@@ -17,11 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @PreAuthorize("hasAuthority('ADMIN')")
+@Tag(name ="Admin API")
 public class AdminMessageController {
 
     private final MessageServiceImpl messageService;
 
     @DeleteMapping("/{messageId}")
+    @Operation(summary = "Delete message by ID",
+            description = "Deletes an existing message by its ID",
+            operationId = "deleteMessage",tags = "Admin API")
     public ResponseEntity<String> deleteMessage(@PathVariable @Min(0) Long messageId) {
         messageService.deleteMessageById(messageId);
         return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);

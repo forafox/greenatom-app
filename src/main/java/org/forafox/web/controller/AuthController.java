@@ -1,5 +1,6 @@
 package org.forafox.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -22,29 +23,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Validated
-@Tag(name = "Auth controller", description = "Auth API")
+@Tag(name = "Authorization and Registration")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
 
     @PostMapping("/login")
+    @Operation(summary = "User login",
+            description = "Authenticates user based on provided credentials and generates JWT token",
+            operationId = "login")
     public JwtResponse login(@Valid @RequestBody SignInRequest loginRequest) {
         return authService.login(new JwtRequest(loginRequest.email(), loginRequest.password()));
     }
 
     @PostMapping("/register")
+    @Operation(summary = "User registration",
+            description = "Registers a new user with provided details and generates JWT token",
+            operationId = "register")
     public JwtResponse register(@Valid @RequestBody final SignUpRequest request) {
         var user = userService.create(new UserDto(null, request.name(), request.email(), request.password()));
         return authService.login(new JwtRequest(user.getEmail(), request.password()));
     }
 
     @PostMapping("/register/admin")
+    @Operation(summary = "Admin registration",
+            description = "Registers a new administrator with provided details and admin key, and generates JWT token",
+            operationId = "registerAdmin")
     public JwtResponse registerAdmin(@Valid @RequestBody final SignUpAdminRequest request) {
         var user = userService.adminCreate(new UserDto(null, request.name(), request.email(), request.password()), request.adminKey());
         return authService.login(new JwtRequest(user.getEmail(), request.password()));
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh token",
+            description = "Refreshes JWT token based on provided refresh token",
+            operationId = "refresh")
     public JwtResponse refresh(@Valid @RequestBody @NotBlank String refreshToken) {
         return authService.refresh(refreshToken);
     }

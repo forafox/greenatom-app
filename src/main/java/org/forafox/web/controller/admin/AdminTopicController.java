@@ -1,5 +1,7 @@
 package org.forafox.web.controller.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @PreAuthorize("hasAuthority('ADMIN')")
+@Tag(name ="Admin API")
 public class AdminTopicController {
     private final TopicService topicService;
     private final TopicMapper topicMapper;
@@ -30,17 +33,26 @@ public class AdminTopicController {
 
 
     @PutMapping
+    @Operation(summary = "Update topic",
+            description = "Update existing topic by its ID",
+            operationId = "updateTopic")
     public TopicDTO updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
         return topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title())));
     }
 
     @DeleteMapping("/{topic_id}")
+    @Operation(summary = "Delete topic",
+            description = "Deletes an existing topic by its ID",
+            operationId = "deleteTopic")
     public ResponseEntity<String> deleteTopic(@PathVariable @Min(0) Long topic_id) {
         topicService.deleteTopicById(topic_id);
         return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{topicId}/message")
+    @Operation(summary = "Update message in topic",
+            description = "Update existing message by its ID within a topic",
+            operationId = "updateMessageInTopic")
     public MessageDTO updateMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageUpdateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
         var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());

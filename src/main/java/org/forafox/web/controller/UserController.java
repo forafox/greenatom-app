@@ -2,6 +2,7 @@ package org.forafox.web.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -22,20 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
-@Tag(name = "User Controller", description = "User API")
+@SecurityRequirement(name = "JWT")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
     @GetMapping("/{id}")
-    @Operation(description = "Get user by id")
+    @Operation(summary = "Get user by ID",
+            description = "Retrieves user information by their ID",
+            operationId = "getUserById", tags = "Admin API")
     @PreAuthorize("hasAuthority('ADMIN')")
     public GetUserResponse getUserById(@PathVariable @Min(0) Long id) {
         return dtoToResponse(userMapper.toDto(userService.getById(id)));
     }
 
     @GetMapping("/me")
-    @Operation(description = "Get user by email in jwt's payload")
+    @Operation(summary = "Get current user",
+            description = "Retrieves information about the current user based on the email stored in the JWT payload",
+            operationId = "getCurrentUser", tags = "Users")
     public GetUserResponse getMe(@AuthenticationPrincipal UserDetails userDetails) {
         return dtoToResponse(userMapper.toDto(userService.getByEmail(userDetails.getUsername())));
     }
