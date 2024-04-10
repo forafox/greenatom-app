@@ -18,13 +18,10 @@ import org.forafox.web.requestRecord.TopicUpdateRequest;
 import org.forafox.web.responseRecord.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/topic")
@@ -42,13 +39,13 @@ public class TopicController {
     @Operation(description = "Create a new topic to the store", operationId = "CreateTopic", tags = "Client API")
     public TopicResponse createTopic(@Valid @RequestBody final TopicCreateRequest topicRequest) {
         var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
-        return responseService.dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title(), null), message));
+        return responseService.dtoToResponse(topicService.createTopicEntity(new TopicDTO(null, topicRequest.title()), message));
     }
 
     @PutMapping
     @Operation(description = "Update an existing topic by Id", operationId = "updateTopic", tags = "Client API")
     public TopicResponse updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
-        return responseService.dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title(), null))));
+        return responseService.dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title()))));
     }
 
     @GetMapping("/{topic_id}")
@@ -59,10 +56,10 @@ public class TopicController {
 
     @GetMapping("/{topic_id}/{page_offset}/{page_limit}")
     @Operation(description = "Shows all messages in topic2", operationId = "ListTopicMessages2", tags = "Client API")
-    public MessageSliceDTO getPageListByID(@PathVariable @Min(0) Long topic_id,
-                                           @PathVariable @Min(0) int page_offset,
-                                           @PathVariable @Min(1) @Max(100) int page_limit) {
-        return messageService.getMessageSliceDTOByTopicId(topic_id, page_offset, page_limit);
+    public MessagePageDTO getPageListByID(@PathVariable @Min(0) Long topic_id,
+                                          @PathVariable @Min(0) int page_offset,
+                                          @PathVariable @Min(1) @Max(100) int page_limit) {
+        return messageService.getMessagePageDTOByTopicId(topic_id, page_offset, page_limit);
     }
 
     @DeleteMapping("/{topic_id}")
@@ -80,23 +77,23 @@ public class TopicController {
 
     @GetMapping("/{page_offset}/{page_limit}")
     @Operation(description = "View all topics2", operationId = "listAllTopics2", tags = "Client API2")
-    public TopicSliceDTO pageListTopics(@PathVariable @Min(0) int page_offset,
-                                        @PathVariable @Min(0) int page_limit) {
-        return topicService.getAllSliceTopicsDTO(page_offset, page_limit);
+    public TopicPageDTO pageListTopics(@PathVariable @Min(0) int page_offset,
+                                       @PathVariable @Min(0) int page_limit) {
+        return topicService.getAllPageTopicsDTO(page_offset, page_limit);
     }
 
     @PostMapping("/{topicId}/message")
     @Operation(description = "Create a new message in topic", operationId = "CreateMessage", tags = "Client API")
     public MessageResponse createMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageCreateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
-        return responseService.messageDtoToResponse(messageService.createMessage(new MessageDTO(null, topic, messageRequest.author(), messageRequest.text(), null)));
+        return responseService.messageDtoToResponse(messageService.createMessage(new MessageDTO(null, topic.getTitle(), messageRequest.author(), messageRequest.text(), null),topic));
     }
 
     @PutMapping("/{topicId}/message")
     @Operation(description = "Update an existing message by Id", operationId = "updateMessage", tags = "Client API")
     public MessageResponse updateMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageUpdateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
-        var messageDTO = new MessageDTO(messageRequest.id(), topic, messageRequest.author(), messageRequest.text(), messageRequest.created());
+        var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());
         return responseService.messageDtoToResponse(messageMapper.toDto(messageService.updateMessageById(messageDTO)));
     }
 

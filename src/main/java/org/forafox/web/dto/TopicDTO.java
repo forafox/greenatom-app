@@ -12,5 +12,4 @@ import java.util.List;
 public class TopicDTO {
     private Long id;
     private String title;
-    private List<MessageDTO> messages;
 }

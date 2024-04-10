@@ -1,21 +1,19 @@
 package org.forafox.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.forafox.domain.Message;
 import org.forafox.domain.Topic;
-import org.forafox.exception.AccessMessageDeniedException;
 import org.forafox.exception.AccessTopicDeniedException;
 import org.forafox.exception.ResourceNotFoundException;
 import org.forafox.repository.TopicRepository;
 import org.forafox.service.TopicService;
 import org.forafox.web.dto.MessageDTO;
-import org.forafox.web.dto.MessageSliceDTO;
 import org.forafox.web.dto.TopicDTO;
-import org.forafox.web.dto.TopicSliceDTO;
+import org.forafox.web.dto.TopicPageDTO;
 import org.forafox.web.mapper.TopicMapper;
+import org.forafox.web.mapper.TopicPageMapper;
 import org.forafox.web.security.principal.AuthenticationFacade;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,13 +24,14 @@ public class TopicServiceImpl implements TopicService {
     private final UserServiceImpl userService;
     private final TopicRepository topicRepository;
     private final AuthenticationFacade authenticationFacade;
+    private final TopicPageMapper topicPageMapper;
     private final TopicMapper topicMapper;
     private final MessageServiceImpl messageService;
 
     @Override
-    public TopicSliceDTO getAllSliceTopicsDTO(int offset, int limit) {
-        Slice<Topic> topicsSlice = topicRepository.findAllSlice(PageRequest.of(offset, limit));
-        return new TopicSliceDTO(topicsSlice.getContent(), topicsSlice.getPageable());
+    public TopicPageDTO getAllPageTopicsDTO(int offset, int limit) {
+        Page<Topic> topicsPage = topicRepository.findAllPage(PageRequest.of(offset, limit));
+        return topicPageMapper.toDto(topicsPage);
 
     }
 
@@ -50,8 +49,7 @@ public class TopicServiceImpl implements TopicService {
         topic.setTitle(topic.getTitle());
         topic.setUser(userService.getByEmail(authenticationFacade.getAuthName()));
         topic = topicRepository.save(topic);
-        message.setTopic(topic);
-        messageService.createMessage(message);
+        messageService.createMessage(message,topic);
         return topicMapper.toDto(topic);
     }
 

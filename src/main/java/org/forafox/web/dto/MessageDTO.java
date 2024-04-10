@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class MessageDTO {
     private Long id;
-    private Topic topic;
+    private String topicTitle;
     private String author;
     private String text;
     private Date createdAt;

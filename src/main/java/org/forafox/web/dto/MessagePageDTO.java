@@ -11,7 +11,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageSliceDTO {
-    List<Message> messagesList;
-    Pageable pageable;
+public class MessagePageDTO {
+    List<MessageDTO> messagesList;
+    boolean isFirstPage;
+    boolean isLastPage;
+    boolean isEmpty;
+    int totalPages;
+    long totalElements;
+    int pageSize;
+    int pageNumber;
 }

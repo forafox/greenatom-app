@@ -2,24 +2,23 @@ package org.forafox.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.forafox.domain.Message;
+import org.forafox.domain.Topic;
 import org.forafox.exception.AccessMessageDeniedException;
 import org.forafox.exception.ResourceNotFoundException;
 import org.forafox.exception.TopicIsEmptyException;
 import org.forafox.repository.MessageRepository;
 import org.forafox.service.MessageService;
 import org.forafox.web.dto.MessageDTO;
-import org.forafox.web.dto.MessageSliceDTO;
+import org.forafox.web.dto.MessagePageDTO;
 import org.forafox.web.mapper.MessageMapper;
+import org.forafox.web.mapper.MessagePageMapper;
 import org.forafox.web.security.principal.AuthenticationFacade;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +26,12 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
     private final UserServiceImpl userService;
+    private final MessagePageMapper messagePageMapper;
     private final AuthenticationFacade authenticationFacade;
 
     @Override
-    public MessageDTO createMessage(MessageDTO message) {
-        return createMessageEntity(message);
+    public MessageDTO createMessage(MessageDTO message, Topic topic) {
+        return createMessageEntity(message,topic);
     }
 
     @Override
@@ -58,7 +58,6 @@ public class MessageServiceImpl implements MessageService {
             throw new AccessMessageDeniedException("You are not the owner of this message!");
         }
         var message = getMessageById(messageDTO.getId());
-        message.setTopic(messageDTO.getTopic());
         message.setText(messageDTO.getText());
         message.setAuthor(messageDTO.getAuthor());
         message.setCreatedAt(messageDTO.getCreatedAt());
@@ -74,10 +73,11 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.findByTopicId(topic_id).orElseThrow(() -> new ResourceNotFoundException("Messages not found"));
     }
 
-    private MessageDTO createMessageEntity(MessageDTO messageDTO) {
+    private MessageDTO createMessageEntity(MessageDTO messageDTO,Topic topic) {
         setDateIfNullInMessage(messageDTO);
         var message = messageMapper.toEntity(messageDTO, null);
         message.setUser(userService.getByEmail(authenticationFacade.getAuthName()));
+        message.setTopic(topic);
         return messageMapper.toDto(messageRepository.save(message));
     }
 
@@ -87,9 +87,9 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
-    public MessageSliceDTO getMessageSliceDTOByTopicId(Long topicId, int pageOffset, int pageLimit) {
-        Slice<Message> messageSlice = messageRepository.findAllSliceByTopicId(topicId, PageRequest.of(pageOffset, pageLimit));
-        return new MessageSliceDTO(messageSlice.getContent(), messageSlice.getPageable());
+    public MessagePageDTO getMessagePageDTOByTopicId(Long topicId, int pageOffset, int pageLimit) {
+        Page<Message> messagePage = messageRepository.findAllPageByTopicId(topicId, PageRequest.of(pageOffset, pageLimit));
+        return messagePageMapper.toDto(messagePage);
     }
 
 }

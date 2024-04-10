@@ -18,15 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TopicMapper implements Mapper<Topic, TopicDTO> {
 
-    public TopicDTO toDtoWithMessages(Topic entity, List<MessageDTO> messages) {
-        var topicDto = new TopicDTO();
-        topicDto.setMessages(messages);
-        topicDto.setTitle(entity.getTitle());
-        topicDto.setId(entity.getId());
-        return topicDto;
-    }
-
-
     @Override
     public TopicDTO toDto(Topic entity) {
         var topicDto = new TopicDTO();

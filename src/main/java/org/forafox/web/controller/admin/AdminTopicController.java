@@ -36,7 +36,7 @@ public class AdminTopicController {
 
     @PutMapping
     public TopicResponse updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
-        return responseService.dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title(), null))));
+        return responseService.dtoToResponse(topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title()))));
     }
 
     @DeleteMapping("/{topic_id}")
@@ -48,7 +48,7 @@ public class AdminTopicController {
     @PutMapping("/{topicId}/message")
     public MessageResponse updateMessageInTopic(@PathVariable @Min(0) Long topicId, @Valid @RequestBody final MessageUpdateRequest messageRequest) {
         var topic = topicService.getTopicByID(topicId);
-        var messageDTO = new MessageDTO(messageRequest.id(), topic, messageRequest.author(), messageRequest.text(), messageRequest.created());
+        var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());
         return responseService.messageDtoToResponse(messageMapper.toDto(messageService.updateMessageById(messageDTO)));
     }
 
