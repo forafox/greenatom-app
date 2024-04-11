@@ -2,12 +2,18 @@ package org.forafox.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.forafox.exception.ErrorMessage;
 import org.forafox.service.AuthService;
 import org.forafox.service.UserService;
+import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.UserDto;
 import org.forafox.web.dto.auth.JwtRequest;
 import org.forafox.web.dto.auth.JwtResponse;
@@ -25,6 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Authorization and Registration")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Successful operation", content = {@Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json")}),
+        @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})
+})
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
@@ -33,6 +43,8 @@ public class AuthController {
     @Operation(summary = "User login",
             description = "Authenticates user based on provided credentials and generates JWT token",
             operationId = "login")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "User not found", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})})
     public JwtResponse login(@Valid @RequestBody SignInRequest loginRequest) {
         return authService.login(new JwtRequest(loginRequest.email(), loginRequest.password()));
     }
@@ -54,6 +66,7 @@ public class AuthController {
         var user = userService.adminCreate(new UserDto(null, request.name(), request.email(), request.password()), request.adminKey());
         return authService.login(new JwtRequest(user.getEmail(), request.password()));
     }
+
     @PostMapping("/refresh")
     @Operation(summary = "Refresh token",
             description = "Refreshes JWT token based on provided refresh token",

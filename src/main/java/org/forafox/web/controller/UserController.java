@@ -3,12 +3,18 @@ package org.forafox.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.forafox.exception.ErrorMessage;
 import org.forafox.service.UserService;
 import org.forafox.web.dto.UserDto;
+import org.forafox.web.dto.auth.JwtResponse;
 import org.forafox.web.mapper.UserMapper;
 import org.forafox.web.responseRecord.GetUserResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @SecurityRequirement(name = "JWT")
+@ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Successful operation", content = {@Content(schema = @Schema(implementation = GetUserResponse.class), mediaType = "application/json")}),
+        @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})
+})
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
