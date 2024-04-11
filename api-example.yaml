@@ -1,0 +1,1445 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Forum Engine",
+    "description": "Sample API of the Forum/Message Board engine",
+    "contact": {
+      "name": "Karabanov Andrey",
+      "email": "deskpa@yandex.ru"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Default Server URL"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authorization and Registration",
+      "description": "User authorization and registration"
+    },
+    {
+      "name": "Client API",
+      "description": "API for client"
+    },
+    {
+      "name": "Client API",
+      "description": "Endpoints for managing topics"
+    },
+    {
+      "name": "Admin API",
+      "description": "API for administrators"
+    }
+  ],
+  "paths": {
+    "/topic/{topicId}": {
+      "put": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Update topic",
+        "description": "Update existing topic by its ID",
+        "operationId": "updateTopic",
+        "parameters": [
+          {
+            "name": "topicId",
+            "in": "query",
+            "description": "ID of the message to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not the owner of this topic!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation exception",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic/{topicId}/message/{messageId}": {
+      "put": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Update message in topic",
+        "description": "Update existing message by topic ID",
+        "operationId": "updateMessage",
+        "parameters": [
+          {
+            "name": "topicId",
+            "in": "path",
+            "description": "ID of the topic to update the message in",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "query",
+            "description": "ID of the message to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not the owner of this message!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic/message not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation exception",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/admin/topic": {
+      "put": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Update topic",
+        "description": "Update existing topic by its ID",
+        "operationId": "updateTopic_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/admin/topic/{topicId}/message/{messageId}": {
+      "put": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Update message in topic",
+        "description": "Update existing message by its ID within a topic",
+        "operationId": "updateMessageInTopic",
+        "parameters": [
+          {
+            "name": "topicId",
+            "in": "path",
+            "description": "ID of the topic to update message in",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "messageId",
+            "in": "query",
+            "description": "ID of the message to update",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "View all topics",
+        "description": "Retrieves all topics",
+        "operationId": "listAllTopics",
+        "responses": {
+          "200": {
+            "description": "List of TopicDTO objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TopicDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Create topic",
+        "description": "Create new topic to store messages",
+        "operationId": "createTopic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TopicCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input (Ex.Topic already exists)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation exception",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic/{topicId}/message": {
+      "post": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Create message in topic",
+        "description": "Create new message in topic by topic ID",
+        "operationId": "createMessage",
+        "parameters": [
+          {
+            "name": "topicId",
+            "in": "path",
+            "description": "ID of the topic to create the message in",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Authorization and Registration"
+        ],
+        "summary": "User registration",
+        "description": "Registers a new user with provided details and generates JWT token",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register/admin": {
+      "post": {
+        "tags": [
+          "Authorization and Registration"
+        ],
+        "summary": "Admin registration",
+        "description": "Registers a new administrator with provided details and admin key, and generates JWT token",
+        "operationId": "registerAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpAdminRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Authorization and Registration"
+        ],
+        "summary": "Refresh token",
+        "description": "Refreshes JWT token based on provided refresh token",
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "description": "Refresh token used to generate a new JWT token"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Authorization and Registration"
+        ],
+        "summary": "User login",
+        "description": "Authenticates user based on provided credentials and generates JWT token",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JwtResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Get user by ID",
+        "description": "Retrieves user information by their ID",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the user to retrieve",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Get current user",
+        "description": "Retrieves information about the current user based on the email stored in the JWT payload",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic/{topic_id}": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Show all messages in topic",
+        "description": "Retrieves all messages in topic by its ID",
+        "operationId": "listTopicMessages",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "ID of the topic to retrieve messages from",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageDTO"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Delete existing topic",
+        "description": "Delete existing topic by its ID",
+        "operationId": "deleteTopic",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "ID of the topic to delete",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not the owner of this topic!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic/{topic_id}/": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Show messages page in topic",
+        "description": "Retrieves a page of messages within topic, given topic ID, page offset, and page limit",
+        "operationId": "pageListTopicMessages",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "ID of the topic",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "page_offset",
+            "in": "query",
+            "description": "Page offset",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page_limit",
+            "in": "query",
+            "description": "Page limit (must be between 1 and 25)",
+            "required": true,
+            "schema": {
+              "maximum": 25,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagePageDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Topic not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/topic/": {
+      "get": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Show topics page",
+        "description": "Retrieves a page of topics with given size and sequence number of topics",
+        "operationId": "pageListTopics",
+        "parameters": [
+          {
+            "name": "page_offset",
+            "in": "query",
+            "description": "Page offset",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "page_limit",
+            "in": "query",
+            "description": "Page limit (must be between 1 and 25)",
+            "required": true,
+            "schema": {
+              "maximum": 25,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TopicPageDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/message/{messageId}": {
+      "delete": {
+        "tags": [
+          "Client API"
+        ],
+        "summary": "Delete message by ID",
+        "description": "Deletes an existing message by its ID",
+        "operationId": "deleteMessage",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "ID of the message to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You are not the owner of this message!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Messages not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An attempt to delete the last message in the topic!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/admin/topic/{topic_id}": {
+      "delete": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Delete topic",
+        "description": "Deletes an existing topic by its ID",
+        "operationId": "deleteTopic_1",
+        "parameters": [
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "ID of the topic to delete",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/admin/message/{messageId}": {
+      "delete": {
+        "tags": [
+          "Admin API"
+        ],
+        "summary": "Delete message by ID",
+        "description": "Deletes an existing message by its ID",
+        "operationId": "deleteMessage_1",
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "ID of the message to delete",
+            "required": true,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TopicDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the topic",
+            "format": "int64",
+            "readOnly": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the topic"
+          }
+        },
+        "description": "DTO for topic"
+      },
+      "ErrorMessage": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "format": "int32",
+            "example": 404
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-04-11T12:00:00Z"
+          },
+          "description": {
+            "type": "string",
+            "example": "Resource not found"
+          },
+          "message": {
+            "type": "string",
+            "example": "The requested resource could not be found"
+          }
+        },
+        "description": "Error message model"
+      },
+      "MessageDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the message",
+            "format": "int64",
+            "readOnly": true
+          },
+          "topicTitle": {
+            "type": "string",
+            "description": "Title of the topic associated with the message",
+            "readOnly": true
+          },
+          "author": {
+            "type": "string",
+            "description": "Author of the message",
+            "readOnly": true
+          },
+          "text": {
+            "type": "string",
+            "description": "Text content of the message"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date and time when the message was created",
+            "format": "date-time",
+            "readOnly": true
+          }
+        },
+        "description": "DTO for message"
+      },
+      "TopicCreateRequest": {
+        "required": [
+          "message",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "$ref": "#/components/schemas/MessageDTO"
+          }
+        }
+      },
+      "SignUpRequest": {
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "JwtResponse": {
+        "required": [
+          "accessToken",
+          "id",
+          "name",
+          "refreshToken",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User ID",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Access token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token"
+          }
+        },
+        "description": "JWT Response"
+      },
+      "SignUpAdminRequest": {
+        "required": [
+          "adminKey",
+          "email",
+          "name",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "adminKey": {
+            "type": "string"
+          }
+        }
+      },
+      "SignInRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "GetUserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "User ID",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "name": {
+            "type": "string",
+            "description": "User name"
+          }
+        },
+        "description": "Response for getting user details",
+        "readOnly": true
+      },
+      "MessagePageDTO": {
+        "type": "object",
+        "properties": {
+          "messagesList": {
+            "type": "array",
+            "description": "List of messages in the current page",
+            "items": {
+              "$ref": "#/components/schemas/MessageDTO"
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "description": "Total number of elements across all pages",
+            "format": "int64"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements in the current page",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "Current page number",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          },
+          "firstPage": {
+            "type": "boolean"
+          },
+          "lastPage": {
+            "type": "boolean"
+          }
+        },
+        "description": "DTO for message page",
+        "readOnly": true
+      },
+      "TopicPageDTO": {
+        "type": "object",
+        "properties": {
+          "topicsList": {
+            "type": "array",
+            "description": "List of topics in the current page",
+            "items": {
+              "$ref": "#/components/schemas/TopicDTO"
+            }
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "description": "Total number of elements across all pages",
+            "format": "int64"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of elements in the current page",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "description": "Current page number",
+            "format": "int32"
+          },
+          "empty": {
+            "type": "boolean"
+          },
+          "firstPage": {
+            "type": "boolean"
+          },
+          "lastPage": {
+            "type": "boolean"
+          }
+        },
+        "description": "DTO for topic page",
+        "readOnly": true
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
