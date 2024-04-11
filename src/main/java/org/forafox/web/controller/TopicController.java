@@ -17,10 +17,7 @@ import org.forafox.service.impl.MessageServiceImpl;
 import org.forafox.web.dto.*;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
-import org.forafox.web.requestRecord.MessageCreateRequest;
-import org.forafox.web.requestRecord.MessageUpdateRequest;
 import org.forafox.web.requestRecord.TopicCreateRequest;
-import org.forafox.web.requestRecord.TopicUpdateRequest;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +30,7 @@ import java.util.List;
 @SecurityRequirement(name = "JWT")
 @RequiredArgsConstructor
 @Validated
-@Tag(name = "Topics", description = "Endpoints for managing topics")
+@Tag(name = "Client API", description = "Endpoints for managing topics")
 public class TopicController {
     private final TopicService topicService;
     private final TopicMapper topicMapper;
@@ -45,7 +42,7 @@ public class TopicController {
             description = "Create new topic to store messages",
             operationId = "createTopic")
     public TopicDTO createTopic(@Valid @RequestBody final TopicCreateRequest topicRequest) {
-        var message = new MessageDTO(null, null, topicRequest.message().author(), topicRequest.message().text(), null);
+        var message = new MessageDTO(null, null, topicRequest.message().getAuthor(), topicRequest.message().getText(), null);
         return topicService.createTopicEntity(new TopicDTO(null, topicRequest.title()), message);
     }
 
@@ -53,8 +50,8 @@ public class TopicController {
     @Operation(summary = "Update topic",
             description = "Update existing topic by its ID",
             operationId = "updateTopic")
-    public TopicDTO updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
-        return topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title())));
+    public TopicDTO updateTopic(@Valid @RequestBody final TopicDTO topicDTO) {
+        return topicMapper.toDto(topicService.updateTopicById(topicDTO));
     }
 
     @GetMapping("/{topic_id}")
@@ -73,9 +70,13 @@ public class TopicController {
             description = "Retrieves a page of messages within topic, given topic ID, page offset, and page limit",
             operationId = "pageListTopicMessages")
     public MessagePageDTO getPageListByID(
-            @PathVariable @Min(0) Long topic_id,
-            @PathVariable @Min(0) int page_offset,
-            @PathVariable @Min(1) @Max(100) int page_limit) {
+            @PathVariable @Min(0)
+            @Parameter(description = "ID of the topic", required = true) Long topic_id,
+            @PathVariable @Min(0)
+            @Parameter(description = "Page offset", required = true) int page_offset,
+            @PathVariable @Min(1) @Max(25)
+            @Parameter(description = "Page limit (must be between 1 and 25)", required = true) int page_limit)
+    {
         return messageService.getMessagePageDTOByTopicId(topic_id, page_offset, page_limit);
     }
 
@@ -104,8 +105,10 @@ public class TopicController {
             description = "Retrieves a page of topics with given size and sequence number of topics",
             operationId = "pageListTopics")
     public TopicPageDTO pageListTopics(
-            @PathVariable @Min(0) int page_offset,
-            @PathVariable @Min(0) int page_limit) {
+            @PathVariable @Min(0)
+            @Parameter(description = "Page offset", required = true) int page_offset,
+            @PathVariable @Min(1) @Max(25)
+            @Parameter(description = "Page limit (must be between 1 and 25)", required = true) int page_limit){
         return topicService.getAllPageTopicsDTO(page_offset, page_limit);
     }
 
@@ -118,9 +121,10 @@ public class TopicController {
             @PathVariable
             @Min(value = 0, message = "Topic ID must be greater than or equal to 0")
             @Parameter(description = "ID of the topic to create the message in", required = true) Long topicId,
-            @Valid @RequestBody final MessageCreateRequest messageRequest) {
+            @Valid @RequestBody final MessageDTO messageDTO) {
         var topic = topicService.getTopicByID(topicId);
-        return messageService.createMessage(new MessageDTO(null, topic.getTitle(), messageRequest.author(), messageRequest.text(), null), topic);
+        messageDTO.setTopicTitle(topic.getTitle());
+        return messageService.createMessage(messageDTO, topic);
     }
 
     @PutMapping("/{topicId}/message")
@@ -131,9 +135,9 @@ public class TopicController {
             @PathVariable
             @Min(value = 0, message = "Topic ID must be greater than or equal to 0")
             @Parameter(description = "ID of the topic to update the message in", required = true) Long topicId,
-            @Valid @RequestBody final MessageUpdateRequest messageRequest) {
+            @Valid @RequestBody final MessageDTO messageDTO) {
         var topic = topicService.getTopicByID(topicId);
-        var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());
+        messageDTO.setTopicTitle(topic.getTitle());
         return messageMapper.toDto(messageService.updateMessageById(messageDTO));
     }
 

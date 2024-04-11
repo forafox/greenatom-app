@@ -2,6 +2,7 @@ package org.forafox.web.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -12,8 +13,6 @@ import org.forafox.web.dto.MessageDTO;
 import org.forafox.web.dto.TopicDTO;
 import org.forafox.web.mapper.MessageMapper;
 import org.forafox.web.mapper.TopicMapper;
-import org.forafox.web.requestRecord.MessageUpdateRequest;
-import org.forafox.web.requestRecord.TopicUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @PreAuthorize("hasAuthority('ADMIN')")
+@SecurityRequirement(name = "JWT")
 @Tag(name = "Admin API")
 public class AdminTopicController {
     private final TopicService topicService;
@@ -37,8 +37,8 @@ public class AdminTopicController {
     @Operation(summary = "Update topic",
             description = "Update existing topic by its ID",
             operationId = "updateTopic")
-    public TopicDTO updateTopic(@Valid @RequestBody final TopicUpdateRequest topicRequest) {
-        return topicMapper.toDto(topicService.updateTopicById(new TopicDTO(topicRequest.id(), topicRequest.title())));
+    public TopicDTO updateTopic(@Valid @RequestBody final TopicDTO topicDTO) {
+        return topicMapper.toDto(topicService.updateTopicById(topicDTO));
     }
 
     @DeleteMapping("/{topic_id}")
@@ -61,9 +61,9 @@ public class AdminTopicController {
             @PathVariable
             @Min(value = 0, message = "Topic ID must be greater than or equal to 0")
             @Parameter(description = "ID of the topic to update message in",required = true) Long topicId,
-            @Valid @RequestBody final MessageUpdateRequest messageRequest) {
+            @Valid @RequestBody final MessageDTO messageDTO) {
         var topic = topicService.getTopicByID(topicId);
-        var messageDTO = new MessageDTO(messageRequest.id(), topic.getTitle(), messageRequest.author(), messageRequest.text(), messageRequest.created());
+        messageDTO.setTopicTitle(topic.getTitle());
         return messageMapper.toDto(messageService.updateMessageById(messageDTO));
     }
 

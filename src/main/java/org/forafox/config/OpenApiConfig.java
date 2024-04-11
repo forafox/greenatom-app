@@ -22,10 +22,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
         },
         tags = {
                 @Tag(name = "Admin API", description = "API for administrators"),
-                @Tag(name = "Topics", description = "Interaction with topics"),
-                @Tag(name = "Messages", description = "Interaction with messages"),
                 @Tag(name = "Authorization and Registration", description = "User authorization and registration"),
-                @Tag(name = "Users", description = "Interaction with users")
+                @Tag(name = "Client API", description = "API for client")
 
         }
 )

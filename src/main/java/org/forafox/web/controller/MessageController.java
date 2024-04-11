@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @SecurityRequirement(name = "JWT")
-@Tag(name = "Messages")
+@Tag(name = "Client API")
 public class MessageController {
     private final MessageServiceImpl messageService;
 

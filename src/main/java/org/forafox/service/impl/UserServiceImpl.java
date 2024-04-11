@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
     private UserDto createAdminEntity(UserDto userDto) {
         User user = userMapper.toEntity(userDto, null);
-        user.setRoles(Set.of(Role.ADMIN, Role.USER));
+        user.setRoles(Set.of(Role.ADMIN));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userMapper.toDto(userRepository.save(user));
     }

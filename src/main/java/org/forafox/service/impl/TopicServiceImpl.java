@@ -60,7 +60,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Topic updateTopicById(TopicDTO topicDTO) {
-        if (!getTopicByID(topicDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+        if (!authenticationFacade.isAdmin() && !getTopicByID(topicDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
             throw new AccessTopicDeniedException("You are not the owner of this topic!");
         }
         var topic = getTopicByID(topicDTO.getId());
@@ -69,10 +69,14 @@ public class TopicServiceImpl implements TopicService {
     }
 
 
+
     @Override
     public void deleteTopicById(Long topicId) {
-        if (!getTopicByID(topicId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+        if (!authenticationFacade.isAdmin() && !getTopicByID(topicId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
             throw new AccessTopicDeniedException("You are not the owner of this topic!");
+        }
+        if (topicRepository.findById(topicId).isEmpty()) {
+            throw new ResourceNotFoundException("Topic not found");
         }
         topicRepository.delete(getTopicByID(topicId));
     }

@@ -2,6 +2,7 @@ package org.forafox.web.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.validation.constraints.Min;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 @PreAuthorize("hasAuthority('ADMIN')")
+@SecurityRequirement(name = "JWT")
 @Tag(name ="Admin API")
 public class AdminMessageController {
 

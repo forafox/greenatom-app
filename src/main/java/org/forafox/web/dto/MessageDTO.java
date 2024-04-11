@@ -13,10 +13,10 @@ import java.util.Date;
 @NoArgsConstructor
 @Schema(description = "DTO for message")
 public class MessageDTO {
-    @Schema(description = "Unique identifier of the message", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Unique identifier of the message")
     private Long id;
 
-    @Schema(description = "Title of the topic associated with the message")
+    @Schema(description = "Title of the topic associated with the message",accessMode = Schema.AccessMode.READ_ONLY)
     private String topicTitle;
 
     @Schema(description = "Author of the message")
@@ -25,6 +25,6 @@ public class MessageDTO {
     @Schema(description = "Text content of the message")
     private String text;
 
-    @Schema(description = "Date and time when the message was created", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Date and time when the message was created",accessMode = Schema.AccessMode.READ_ONLY)
     private Date createdAt;
 }

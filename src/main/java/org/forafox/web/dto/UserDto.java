@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.Length;
 @Schema(description = "DTO for User")
 public class UserDto {
 
-    @Schema(description = "Unique identifier of the user",accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Unique identifier of the user")
     @NotNull(message = "Id must not be null.")
     private Long id;
 

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "DTO for topic in list")
 public class TopicInListDTO {
-    @Schema(description = "Unique identifier of the topic", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Unique identifier of the topic")
     private Long id;
 
     @Schema(description = "Title of the topic")

@@ -39,7 +39,7 @@ public class MessageServiceImpl implements MessageService {
         if (messageIsLastInTopic(getMessageById(messageId).getTopic().getId())) {
             throw new TopicIsEmptyException("An attempt to delete the last message in the topic!");
         }
-        if (!getMessageById(messageId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+        if (!authenticationFacade.isAdmin() && !getMessageById(messageId).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
             throw new AccessMessageDeniedException("You are not the owner of this message!");
         }
         if (messageRepository.findById(messageId).isEmpty()) {
@@ -48,13 +48,14 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.delete(getMessageById(messageId));
     }
 
+
     private boolean messageIsLastInTopic(Long topicId) {
         return getAllMessagesByTopicId(topicId).size() == 1;
     }
 
     @Override
     public Message updateMessageById(MessageDTO messageDTO) {
-        if (!getMessageById(messageDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
+        if (!authenticationFacade.isAdmin() && !getMessageById(messageDTO.getId()).getUser().getUsername().equals(authenticationFacade.getAuthName())) {
             throw new AccessMessageDeniedException("You are not the owner of this message!");
         }
         var message = getMessageById(messageDTO.getId());

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Schema(description = "DTO for topic")
 public class TopicDTO {
-    @Schema(description = "Unique identifier of the topic",accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Unique identifier of the topic")
     private Long id;
 
     @Schema(description = "Title of the topic")

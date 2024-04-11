@@ -44,7 +44,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(summary = "Get current user",
             description = "Retrieves information about the current user based on the email stored in the JWT payload",
-            operationId = "getCurrentUser", tags = "Users")
+            operationId = "getCurrentUser", tags = "Client API")
     public GetUserResponse getMe(@AuthenticationPrincipal UserDetails userDetails) {
         return dtoToResponse(userMapper.toDto(userService.getByEmail(userDetails.getUsername())));
     }
