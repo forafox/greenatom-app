@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8080:8080"
+    command: java -jar app.jar
+    env_file: .env
+
