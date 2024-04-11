@@ -55,14 +55,17 @@ public class TopicController {
         return topicService.createTopicEntity(new TopicDTO(null, topicRequest.title()), message);
     }
 
-    @PutMapping
+    @PutMapping("/{topicId}")
     @Operation(summary = "Update topic", description = "Update existing topic by its ID", operationId = "updateTopic")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Successful operation", content = {@Content(schema = @Schema(implementation = TopicDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "403", description = "You are not the owner of this topic!", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", description = "Topic not found", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "422", description = "Validation exception", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})})
-    public TopicDTO updateTopic(@Valid @RequestBody final TopicDTO topicDTO) {
+    public TopicDTO updateTopic(
+            @Parameter(description = "ID of the message to update", required = true) Long topicId,
+            @Valid @RequestBody final TopicDTO topicDTO) {
+        topicDTO.setId(topicId);
         return topicMapper.toDto(topicService.updateTopicById(topicDTO));
     }
 
@@ -75,12 +78,14 @@ public class TopicController {
         return topicMapper.toDtos(topicService.getAllTopics());
     }
 
-    @GetMapping("/{page_offset}/{page_limit}")
+    @GetMapping("/")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = TopicPageDTO.class), mediaType = "application/json")
             )})
     @Operation(summary = "Show topics page", description = "Retrieves a page of topics with given size and sequence number of topics", operationId = "pageListTopics")
-    public TopicPageDTO pageListTopics(@PathVariable @Min(0) @Parameter(description = "Page offset", required = true) int page_offset, @PathVariable @Min(1) @Max(25) @Parameter(description = "Page limit (must be between 1 and 25)", required = true) int page_limit) {
+    public TopicPageDTO pageListTopics(
+            @RequestParam @Parameter(description = "Page offset", required = true) @Min(0) int page_offset,
+            @RequestParam @Parameter(description = "Page limit (must be between 1 and 25)", required = true) @Min(1) @Max(25) int page_limit) {
         return topicService.getAllPageTopicsDTO(page_offset, page_limit);
     }
 
@@ -94,7 +99,7 @@ public class TopicController {
         return messageMapper.toDtos(messageService.getAllMessagesByTopicId(topic_id));
     }
 
-    @GetMapping("/{topic_id}/{page_offset}/{page_limit}")
+    @GetMapping("/{topic_id}/")
     @ApiResponses({
             @ApiResponse(responseCode = "200",
                     description = "Successful operation",
@@ -109,7 +114,11 @@ public class TopicController {
                     content = {@Content(schema = @Schema(implementation = ErrorMessage.class),
                             mediaType = "application/json")})})
     @Operation(summary = "Show messages page in topic", description = "Retrieves a page of messages within topic, given topic ID, page offset, and page limit", operationId = "pageListTopicMessages")
-    public MessagePageDTO getPageListByID(@PathVariable @Min(0) @Parameter(description = "ID of the topic", required = true) Long topic_id, @PathVariable @Min(0) @Parameter(description = "Page offset", required = true) int page_offset, @PathVariable @Min(1) @Max(25) @Parameter(description = "Page limit (must be between 1 and 25)", required = true) int page_limit) {
+    public MessagePageDTO getPageListByID(
+            @PathVariable @Min(0) @Parameter(description = "ID of the topic", required = true) Long topic_id,
+            @RequestParam @Min(0) @Parameter(description = "Page offset", required = true) int page_offset,
+            @RequestParam @Min(1) @Max(25) @Parameter(description = "Page limit (must be between 1 and 25)", required = true) int page_limit
+    ) {
         return messageService.getMessagePageDTOByTopicId(topic_id, page_offset, page_limit);
     }
 
@@ -125,7 +134,7 @@ public class TopicController {
         return messageService.createMessage(messageDTO, topic);
     }
 
-    @PutMapping("/{topicId}/message")
+    @PutMapping("/{topicId}/message/{messageId}")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = MessageDTO.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")}),
@@ -134,9 +143,14 @@ public class TopicController {
             @ApiResponse(responseCode = "422", description = "Validation exception", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})
     })
     @Operation(summary = "Update message in topic", description = "Update existing message by topic ID", operationId = "updateMessage")
-    public MessageDTO updateMessageInTopic(@PathVariable @Min(value = 0, message = "Topic ID must be greater than or equal to 0") @Parameter(description = "ID of the topic to update the message in", required = true) Long topicId, @Valid @RequestBody final MessageDTO messageDTO) {
+    public MessageDTO updateMessageInTopic(
+            @PathVariable @Min(value = 0, message = "Topic ID must be greater than or equal to 0")
+            @Parameter(description = "ID of the topic to update the message in", required = true) Long topicId,
+            @Parameter(description = "ID of the message to update", required = true) Long messageId,
+            @Valid @RequestBody final MessageDTO messageDTO) {
         var topic = topicService.getTopicByID(topicId);
         messageDTO.setTopicTitle(topic.getTitle());
+        messageDTO.setId(messageId);
         return messageMapper.toDto(messageService.updateMessageById(messageDTO));
     }
 

@@ -53,7 +53,7 @@ public class AdminTopicController {
         return new ResponseEntity<>("Successful operation", HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{topicId}/message")
+    @PutMapping("/{topicId}/message/{messageId}")
     @Operation(summary = "Update message in topic",
             description = "Update existing message by its ID within a topic",
             operationId = "updateMessageInTopic")
@@ -61,9 +61,11 @@ public class AdminTopicController {
             @PathVariable
             @Min(value = 0, message = "Topic ID must be greater than or equal to 0")
             @Parameter(description = "ID of the topic to update message in",required = true) Long topicId,
+            @Parameter(description = "ID of the message to update", required = true) Long messageId,
             @Valid @RequestBody final MessageDTO messageDTO) {
         var topic = topicService.getTopicByID(topicId);
         messageDTO.setTopicTitle(topic.getTitle());
+        messageDTO.setId(messageId);
         return messageMapper.toDto(messageService.updateMessageById(messageDTO));
     }
 

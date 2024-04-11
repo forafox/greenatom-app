@@ -60,7 +60,6 @@ public class MessageServiceImpl implements MessageService {
         }
         var message = getMessageById(messageDTO.getId());
         message.setText(messageDTO.getText());
-        message.setCreatedAt(messageDTO.getCreatedAt());
         return messageRepository.save(message);
     }
 

@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Schema(description = "DTO for message")
 public class MessageDTO {
-    @Schema(description = "Unique identifier of the message")
+    @Schema(description = "Unique identifier of the message",accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Schema(description = "Title of the topic associated with the message",accessMode = Schema.AccessMode.READ_ONLY)
