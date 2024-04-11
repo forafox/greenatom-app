@@ -31,7 +31,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDTO createMessage(MessageDTO message, Topic topic) {
-        return createMessageEntity(message,topic);
+        return createMessageEntity(message, topic);
     }
 
     @Override
@@ -60,7 +60,6 @@ public class MessageServiceImpl implements MessageService {
         }
         var message = getMessageById(messageDTO.getId());
         message.setText(messageDTO.getText());
-        message.setAuthor(messageDTO.getAuthor());
         message.setCreatedAt(messageDTO.getCreatedAt());
         return messageRepository.save(message);
     }
@@ -74,8 +73,9 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.findByTopicId(topic_id).orElseThrow(() -> new ResourceNotFoundException("Messages not found"));
     }
 
-    private MessageDTO createMessageEntity(MessageDTO messageDTO,Topic topic) {
+    private MessageDTO createMessageEntity(MessageDTO messageDTO, Topic topic) {
         setDateIfNullInMessage(messageDTO);
+        setAuthorIfNullInMessage(messageDTO);
         var message = messageMapper.toEntity(messageDTO, null);
         message.setUser(userService.getByEmail(authenticationFacade.getAuthName()));
         message.setTopic(topic);
@@ -85,6 +85,12 @@ public class MessageServiceImpl implements MessageService {
     private void setDateIfNullInMessage(MessageDTO message) {
         if (message.getCreatedAt() == null) {
             message.setCreatedAt(new Date());
+        }
+    }
+
+    private void setAuthorIfNullInMessage(MessageDTO message) {
+        if (message.getAuthor() == null) {
+            message.setAuthor(authenticationFacade.getAuthName());
         }
     }
 

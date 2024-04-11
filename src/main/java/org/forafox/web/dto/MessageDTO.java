@@ -19,7 +19,7 @@ public class MessageDTO {
     @Schema(description = "Title of the topic associated with the message",accessMode = Schema.AccessMode.READ_ONLY)
     private String topicTitle;
 
-    @Schema(description = "Author of the message")
+    @Schema(description = "Author of the message",accessMode = Schema.AccessMode.READ_ONLY)
     private String author;
 
     @Schema(description = "Text content of the message")
