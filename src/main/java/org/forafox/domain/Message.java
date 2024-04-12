@@ -1,7 +1,9 @@
 package org.forafox.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -10,6 +12,8 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "messages")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -101,18 +101,9 @@ public class TopicController {
 
     @GetMapping("/{topic_id}/")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    description = "Successful operation",
-                    content = {@Content(schema = @Schema(implementation = MessagePageDTO.class),
-                            mediaType = "application/json")}),
-            @ApiResponse(responseCode = "400",
-                    description = "Invalid input",
-                    content = {@Content(schema = @Schema(implementation = ErrorMessage.class),
-                            mediaType = "application/json")}),
-            @ApiResponse(responseCode = "404",
-                    description = "Topic not found",
-                    content = {@Content(schema = @Schema(implementation = ErrorMessage.class),
-                            mediaType = "application/json")})})
+            @ApiResponse(responseCode = "200", description = "Successful operation", content = {@Content(schema = @Schema(implementation = MessagePageDTO.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "404", description = "Topic not found", content = {@Content(schema = @Schema(implementation = ErrorMessage.class), mediaType = "application/json")})})
     @Operation(summary = "Show messages page in topic", description = "Retrieves a page of messages within topic, given topic ID, page offset, and page limit", operationId = "pageListTopicMessages")
     public MessagePageDTO getPageListByID(
             @PathVariable @Min(0) @Parameter(description = "ID of the topic", required = true) Long topic_id,
